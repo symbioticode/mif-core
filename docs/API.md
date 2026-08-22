@@ -23,6 +23,7 @@ development version when imported directly from a checkout.
 - `MetricAdapter` describes a metric calculated from one certified handoff.
 - `MetricCertifier` validates the declared metric output shape and finiteness.
 - `StrategyMetadata` and `MetricMetadata` make the subject explicit.
+- `StrategyRegistry` and `MetricRegistry` provide explicit name-based lookup.
 - `default_catalog()` returns the shipped offline tests.
 - `CriteriaPolicy` makes adaptive thresholds explicit.
 - `Certifier` executes only the test IDs selected by the caller.
