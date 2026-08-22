@@ -12,3 +12,15 @@ scope small and deterministic.
 The input boundary is one certified `DALHandoff` from `mif-dal-en`. CORE does
 not fetch market data, repair data, or silently replace a failed DQF decision.
 
+## Shipped offline catalogue
+
+The initial catalogue contains three explicit tests:
+
+- `T_HANDOFF_001` — verifies the DAL boundary;
+- `T_SIGNAL_SHAPE_001` — verifies one signal per observation;
+- `T_STABILITY_001` — computes positive-return rate and selects a threshold
+  from `StrategyMetadata.frequency` (`0.60` for low frequency, `0.50` otherwise).
+
+These are deliberately small contracts, not a claim that a strategy is
+profitable. A later phase may add walk-forward and look-ahead tests while
+preserving the same atomic test interface.
