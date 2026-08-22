@@ -1,5 +1,7 @@
 # mif-core
 
+[![CI](https://github.com/symbioticode/mif-core/actions/workflows/ci.yml/badge.svg)](https://github.com/symbioticode/mif-core/actions/workflows/ci.yml)
+
 The metric and strategy qualification layer of the Metric Integrity Framework.
 
 `mif-core` sits above the two canonical infrastructure projects:
