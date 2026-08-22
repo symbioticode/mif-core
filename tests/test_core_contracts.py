@@ -2,7 +2,7 @@ import unittest
 from dataclasses import dataclass
 import json
 
-from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog, TestDefinition, default_catalog
+from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog, TestDefinition, __version__, default_catalog
 from core.certification.tiers import calculate_tier
 from core.cli import main as cli_main
 from core.integrations.dal import HandoffContractError
@@ -55,6 +55,9 @@ class CoreContractTests(unittest.TestCase):
     def test_metadata_rejects_unknown_frequency(self):
         with self.assertRaises(ValueError):
             StrategyMetadata("bad", "unknown", "1D", 1, 1)
+
+    def test_package_version_is_exposed(self):
+        self.assertRegex(__version__, r"^\d+\.\d+\.\d+")
 
     def test_metric_contract_requires_declared_output_kind(self):
         class ExampleMetric(MetricAdapter):

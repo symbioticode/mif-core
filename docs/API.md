@@ -14,6 +14,9 @@ from core import (
 )
 ```
 
+`core.__version__` exposes the installed package version and falls back to the
+development version when imported directly from a checkout.
+
 ## Boundaries
 
 - `StrategyAdapter` describes strategy signal and backtest behavior.
