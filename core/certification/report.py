@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import json
 from typing import Any, Dict
 
 
@@ -18,3 +19,7 @@ class CertificationReport:
             "validity_domain": self.validity_domain,
             "tier": self.tier,
         }
+
+    def to_json(self) -> str:
+        """Serialize the report using the stable dictionary representation."""
+        return json.dumps(self.to_dict(), sort_keys=True)

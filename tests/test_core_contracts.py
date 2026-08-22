@@ -1,5 +1,6 @@
 import unittest
 from dataclasses import dataclass
+import json
 
 from core import Certifier, CriteriaPolicy, StrategyAdapter, StrategyMetadata, TestCatalog, TestDefinition, default_catalog
 from core.certification.tiers import calculate_tier
@@ -65,6 +66,7 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(report.tests_run["T_PASS"]["status"], "PASS")
         self.assertEqual(report.to_dict()["strategy_name"], "example")
         self.assertEqual(report.tier, "S")
+        self.assertEqual(json.loads(report.to_json())["tier"], "S")
 
     def test_certifier_rejects_empty_protocol(self):
         catalog = TestCatalog()
