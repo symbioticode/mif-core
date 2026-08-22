@@ -19,7 +19,21 @@ class Certifier:
         results: dict[str, dict[str, Any]] = {}
         for test_id in test_ids:
             definition = self.catalog.get(test_id)
-            results[test_id] = definition.execute(strategy=strategy, handoff=handoff)
+            try:
+                result = definition.execute(strategy=strategy, handoff=handoff)
+            except Exception as exc:
+                result = {"passed": False, "value": None, "details": {"error": str(exc)}}
+            results[test_id] = {
+                "test_id": test_id,
+                "test_name": definition.name,
+                "category": definition.category,
+                "status": "PASS" if result.get("passed", False) else "FAIL",
+                "severity": "ERROR" if not result.get("passed", False) else "INFO",
+                "interpretation": (
+                    "Test passed" if result.get("passed", False) else "Test failed"
+                ),
+                **result,
+            }
         status = "PASS" if all(item.get("passed", False) for item in results.values()) else "FAIL"
         return CertificationReport(
             strategy_name=strategy.metadata.name,

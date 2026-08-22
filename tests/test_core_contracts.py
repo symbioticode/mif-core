@@ -42,6 +42,8 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(report.status, "PASS")
         self.assertEqual(report.validity_domain["asset_scope"], "BTC-USD")
         self.assertEqual(report.validity_domain["assembly_hash"], "a" * 64)
+        self.assertEqual(report.tests_run["T_PASS"]["status"], "PASS")
+        self.assertEqual(report.to_dict()["strategy_name"], "example")
 
     def test_certifier_rejects_empty_protocol(self):
         catalog = TestCatalog()
@@ -71,6 +73,13 @@ class CoreContractTests(unittest.TestCase):
             MutatedStrategy(), Handoff(), ["T_SIGNAL_SHAPE_001"]
         )
         self.assertEqual(report.status, "FAIL")
+
+    def test_test_exception_becomes_explicit_failure(self):
+        catalog = TestCatalog()
+        catalog.register(TestDefinition("T_RAISE", "raising test", "strategy", lambda **_: 1 / 0))
+        report = Certifier(catalog).certify(ExampleStrategy(), Handoff(), ["T_RAISE"])
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(report.tests_run["T_RAISE"]["details"]["error"], "division by zero")
 
     def test_stability_uses_frequency_aware_threshold(self):
         report = Certifier(default_catalog()).certify(
