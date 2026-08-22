@@ -6,6 +6,7 @@ import math
 from typing import Any
 
 from .catalog import TestCatalog, TestDefinition
+from .policy import CriteriaPolicy
 
 
 def _handoff_ready(*, handoff: Any, **_: Any) -> dict[str, Any]:
@@ -41,7 +42,7 @@ def _signals_shape(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     }
 
 
-def _adaptive_stability(*, strategy: Any, handoff: Any) -> dict[str, Any]:
+def _adaptive_stability(*, strategy: Any, handoff: Any, policy: CriteriaPolicy) -> dict[str, Any]:
     """Check positive-return rate with frequency-aware thresholds.
 
     Low-frequency strategies use a more conservative minimum sample-independent
@@ -56,7 +57,7 @@ def _adaptive_stability(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     if not returns:
         return {"passed": False, "value": 0.0, "details": {"reason": "no returns"}}
     positive_rate = sum(value > 0 for value in returns) / len(returns)
-    threshold = 0.60 if strategy.metadata.frequency == "low" else 0.50
+    threshold = policy.positive_rate_for(strategy.metadata.frequency)
     return {
         "passed": positive_rate >= threshold,
         "value": positive_rate,
@@ -88,7 +89,7 @@ def _return_integrity(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     }
 
 
-def _walk_forward_consistency(*, strategy: Any, handoff: Any) -> dict[str, Any]:
+def _walk_forward_consistency(*, strategy: Any, handoff: Any, policy: CriteriaPolicy) -> dict[str, Any]:
     """Check that the out-of-sample half retains a non-negative hit rate."""
     try:
         returns = list(strategy.backtest(handoff)["returns"])
@@ -100,9 +101,9 @@ def _walk_forward_consistency(*, strategy: Any, handoff: Any) -> dict[str, Any]:
         return {"passed": False, "value": 0.0, "details": {"reason": "no out-of-sample observations"}}
     positive_rate = sum(value > 0 for value in test_returns) / len(test_returns)
     return {
-        "passed": positive_rate >= 0.50,
+        "passed": positive_rate >= policy.out_of_sample_positive_rate,
         "value": positive_rate,
-        "threshold": 0.50,
+        "threshold": policy.out_of_sample_positive_rate,
         "details": {
             "train_observations": split,
             "test_observations": len(test_returns),
@@ -138,8 +139,9 @@ def _no_lookahead(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     }
 
 
-def default_catalog() -> TestCatalog:
+def default_catalog(policy: CriteriaPolicy | None = None) -> TestCatalog:
     """Return the small, offline catalogue shipped with the first release."""
+    policy = policy or CriteriaPolicy()
     catalog = TestCatalog()
     catalog.register(TestDefinition(
         "T_HANDOFF_001", "DAL handoff readiness", "integration", _handoff_ready
@@ -148,13 +150,15 @@ def default_catalog() -> TestCatalog:
         "T_SIGNAL_SHAPE_001", "Signal shape", "strategy", _signals_shape
     ))
     catalog.register(TestDefinition(
-        "T_STABILITY_001", "Adaptive positive-return stability", "stability", _adaptive_stability
+        "T_STABILITY_001", "Adaptive positive-return stability", "stability",
+        lambda **kwargs: _adaptive_stability(policy=policy, **kwargs),
     ))
     catalog.register(TestDefinition(
         "T_RETURN_INTEGRITY_001", "Backtest return integrity", "data_quality", _return_integrity
     ))
     catalog.register(TestDefinition(
-        "T_WALK_FORWARD_001", "Out-of-sample consistency", "stability", _walk_forward_consistency
+        "T_WALK_FORWARD_001", "Out-of-sample consistency", "stability",
+        lambda **kwargs: _walk_forward_consistency(policy=policy, **kwargs),
     ))
     catalog.register(TestDefinition(
         "T_LOOKAHEAD_001", "Prefix causality", "indicator", _no_lookahead

@@ -32,6 +32,10 @@ The report also exposes a summary tier. `S` means every selected test passed;
 conservative default for weaker evidence or no tests. The tier never hides the
 individual results and is not a profitability claim.
 
+Adaptive thresholds are supplied through `CriteriaPolicy`, which validates and
+records the criteria used by stability and walk-forward tests. Callers can
+inject a policy for an experiment without modifying test code.
+
 These are deliberately small contracts, not a claim that a strategy is
 profitable. Future tests can extend the same atomic interface without changing
 the existing contracts.

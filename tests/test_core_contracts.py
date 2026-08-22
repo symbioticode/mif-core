@@ -1,7 +1,7 @@
 import unittest
 from dataclasses import dataclass
 
-from core import Certifier, StrategyAdapter, StrategyMetadata, TestCatalog, TestDefinition, default_catalog
+from core import Certifier, CriteriaPolicy, StrategyAdapter, StrategyMetadata, TestCatalog, TestDefinition, default_catalog
 from core.certification.tiers import calculate_tier
 from core.cli import main as cli_main
 from core.integrations.dal import HandoffContractError
@@ -106,6 +106,16 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(calculate_tier({}), "C")
         self.assertEqual(calculate_tier({"a": {"passed": True}, "b": {"passed": False}}), "B")
         self.assertEqual(calculate_tier({"a": {"passed": True}, "b": {"passed": True}}), "S")
+
+    def test_criteria_policy_is_validated_and_injectable(self):
+        with self.assertRaises(ValueError):
+            CriteriaPolicy(default_positive_rate=1.1)
+        policy = CriteriaPolicy(default_positive_rate=0.80)
+        report = Certifier(default_catalog(policy)).certify(
+            ExampleStrategy(), Handoff(), ["T_STABILITY_001"]
+        )
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(report.tests_run["T_STABILITY_001"]["threshold"], 0.80)
 
     def test_cli_catalog_is_available(self):
         self.assertEqual(cli_main(["catalog"]), 0)
