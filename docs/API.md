@@ -28,5 +28,6 @@ development version when imported directly from a checkout.
 - `Certifier` executes only the test IDs selected by the caller.
 
 `CertificationReport.to_dict()` and `CertificationReport.to_json()` are the
-stable report export methods. CORE does not fetch data; production callers
-provide a `DALHandoff` from `mif-dal-en`.
+stable report export methods. Metric certification results include the same
+asset, calendar, DQF status, and assembly hash validity domain. CORE does not
+fetch data; production callers provide a `DALHandoff` from `mif-dal-en`.

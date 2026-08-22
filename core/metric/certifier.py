@@ -37,5 +37,11 @@ class MetricCertifier:
             "metric_name": metric.metadata.name,
             "metric_version": metric.metadata.version,
             "status": "PASS" if passed else "FAIL",
+            "validity_domain": {
+                "asset_scope": handoff.asset_id,
+                "calendar": handoff.calendar,
+                "assembly_hash": handoff.assembly_hash,
+                "dqf_status": handoff.dqf_status,
+            },
             "details": details,
         }

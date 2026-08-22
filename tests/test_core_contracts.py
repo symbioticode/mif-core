@@ -72,6 +72,8 @@ class CoreContractTests(unittest.TestCase):
 
         result = MetricCertifier().certify(ExampleMetric(), Handoff())
         self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["validity_domain"]["asset_scope"], "BTC-USD")
+        self.assertEqual(result["validity_domain"]["assembly_hash"], "a" * 64)
 
     def test_metric_certifier_rejects_wrong_series_length_and_nan_scalar(self):
         class BadSeries(MetricAdapter):
