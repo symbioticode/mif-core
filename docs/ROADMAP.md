@@ -18,8 +18,8 @@ because its selected tests pass.
 
 1. Add metric-specific atomic tests without coupling them to a strategy
    backtest contract.
-2. Replace the minimal single split with configurable rolling windows; the
-   initial out-of-sample fraction and minimum-sample policy are now explicit.
+2. Extend the configurable rolling-window policy with richer train/test
+   semantics and reporting.
 3. Add richer human-readable report rendering while preserving JSON as the machine
    contract.
 4. Run the canonical DAL integration suite with real `DALHandoff` objects in

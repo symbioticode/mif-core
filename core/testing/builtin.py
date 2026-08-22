@@ -96,27 +96,41 @@ def _walk_forward_consistency(*, strategy: Any, handoff: Any, policy: CriteriaPo
     except Exception as exc:
         return {"passed": False, "value": None, "details": {"error": str(exc)}}
     test_size = max(1, round(len(returns) * policy.walk_forward_test_fraction))
-    split = len(returns) - test_size
-    test_returns = returns[split:]
-    if len(test_returns) < policy.walk_forward_min_test_observations:
+    if test_size < policy.walk_forward_min_test_observations:
         return {
             "passed": False,
             "value": 0.0,
             "details": {
                 "reason": "insufficient out-of-sample observations",
-                "test_observations": len(test_returns),
+                "test_observations": test_size,
                 "minimum": policy.walk_forward_min_test_observations,
             },
         }
-    positive_rate = sum(value > 0 for value in test_returns) / len(test_returns)
+    windows = []
+    start = 0
+    while start + policy.walk_forward_train_observations + test_size <= len(returns):
+        test_start = start + policy.walk_forward_train_observations
+        test_returns = returns[test_start : test_start + test_size]
+        positive_rate = sum(value > 0 for value in test_returns) / len(test_returns)
+        windows.append({
+            "train_start": start,
+            "test_start": test_start,
+            "test_observations": len(test_returns),
+            "positive_rate": positive_rate,
+            "passed": positive_rate >= policy.out_of_sample_positive_rate,
+        })
+        start += policy.walk_forward_step
+    if not windows:
+        return {"passed": False, "value": 0.0, "details": {"reason": "no complete walk-forward windows"}}
+    positive_rate = sum(window["positive_rate"] for window in windows) / len(windows)
+    passed = all(window["passed"] for window in windows)
     return {
-        "passed": positive_rate >= policy.out_of_sample_positive_rate,
+        "passed": passed,
         "value": positive_rate,
         "threshold": policy.out_of_sample_positive_rate,
         "details": {
-            "train_observations": split,
-            "test_observations": len(test_returns),
-            "positive_test_observations": sum(value > 0 for value in test_returns),
+            "window_count": len(windows),
+            "windows": windows,
         },
     }
 

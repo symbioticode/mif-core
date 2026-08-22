@@ -242,6 +242,26 @@ class CoreContractTests(unittest.TestCase):
         )
         self.assertEqual(report.status, "FAIL")
 
+    def test_walk_forward_reports_rolling_windows(self):
+        class MixedStrategy(ExampleStrategy):
+            def backtest(self, handoff):
+                return {"returns": [0.1, 0.1, 0.1, 0.1, -0.1, -0.1]}
+
+        policy = CriteriaPolicy(
+            walk_forward_test_fraction=0.33,
+            walk_forward_train_observations=2,
+            walk_forward_step=1,
+        )
+        report = Certifier(default_catalog(policy)).certify(
+            MixedStrategy(), Handoff(), ["T_WALK_FORWARD_001"]
+        )
+        result = report.tests_run["T_WALK_FORWARD_001"]
+        self.assertEqual(report.status, "FAIL")
+        self.assertGreater(result["details"]["window_count"], 1)
+        self.assertEqual(
+            len(result["details"]["windows"]), result["details"]["window_count"]
+        )
+
     def test_walk_forward_rejects_insufficient_test_sample(self):
         class ShortStrategy(ExampleStrategy):
             def backtest(self, handoff):

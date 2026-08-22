@@ -12,6 +12,8 @@ class CriteriaPolicy:
     out_of_sample_positive_rate: float = 0.50
     walk_forward_test_fraction: float = 0.50
     walk_forward_min_test_observations: int = 2
+    walk_forward_train_observations: int = 2
+    walk_forward_step: int = 1
 
     def __post_init__(self) -> None:
         for name in (
@@ -26,6 +28,8 @@ class CriteriaPolicy:
             raise ValueError("walk_forward_test_fraction must be between 0 and 1")
         if self.walk_forward_min_test_observations < 1:
             raise ValueError("walk_forward_min_test_observations must be >= 1")
+        if self.walk_forward_train_observations < 1 or self.walk_forward_step < 1:
+            raise ValueError("walk-forward train observations and step must be >= 1")
 
     def positive_rate_for(self, frequency: str) -> float:
         return (
