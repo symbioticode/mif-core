@@ -79,6 +79,7 @@ class CoreContractTests(unittest.TestCase):
         result = MetricCertifier().certify(ExampleMetric(), Handoff())
         self.assertEqual(result["status"], "PASS")
         self.assertEqual(result["validity_domain"]["asset_scope"], "BTC-USD")
+        self.assertEqual(result["validity_domain"]["coverage"], "FULL")
         self.assertEqual(result["validity_domain"]["assembly_hash"], "a" * 64)
 
     def test_metric_registry_rejects_duplicates(self):

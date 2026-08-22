@@ -15,6 +15,7 @@ class MetricCertifier:
         validity_domain = {
             "asset_scope": handoff.asset_id,
             "calendar": handoff.calendar,
+            "coverage": handoff.coverage,
             "assembly_hash": handoff.assembly_hash,
             "dqf_status": handoff.dqf_status,
         }
