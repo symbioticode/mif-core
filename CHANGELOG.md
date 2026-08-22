@@ -9,6 +9,12 @@
 - Added finite/numeric validation and explicit diagnostics for metric and
   strategy returns.
 - Added human-readable CLI and certification report output alongside JSON.
+- Added explicit CLI test selection and duplicate-selection rejection.
+- Hardened adapter, metadata, registry, catalog, report, and DAL boundary
+  validation with diagnostics for invalid inputs.
+- Added NumPy-compatible real-number handling for metric outputs and DAL
+  quality scores.
+- Enforced Ruff formatting in CI.
 - Added Python 3.13, canonical DAL import, mypy, and artifact metadata checks
   to CI.
 - Updated the protected GitHub Release workflow and PyPI publishing guide.
