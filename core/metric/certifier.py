@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from numbers import Real
 from typing import Any
 
 from ..integrations.dal import validate_dal_handoff
@@ -43,7 +44,7 @@ class MetricCertifier:
             invalid: list[dict[str, object]] = []
             if actual_length >= 0:
                 for index, value in enumerate(output):
-                    if isinstance(value, bool) or not isinstance(value, (int, float)):
+                    if isinstance(value, bool) or not isinstance(value, Real):
                         invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
                     elif not math.isfinite(value):
                         invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
@@ -55,7 +56,7 @@ class MetricCertifier:
                 "invalid": invalid,
             }
         else:
-            passed = isinstance(output, (int, float)) and not isinstance(output, bool) and math.isfinite(output)
+            passed = isinstance(output, Real) and not isinstance(output, bool) and math.isfinite(output)
             details = {"output_kind": kind, "finite_numeric": passed}
         return {
             "schema_version": 1,

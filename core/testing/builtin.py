@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 from dataclasses import is_dataclass, replace
 import math
+from numbers import Real
 from typing import Any, cast
 
 from .catalog import TestCatalog, TestDefinition
@@ -58,7 +59,7 @@ def _adaptive_stability(*, strategy: Any, handoff: Any, policy: CriteriaPolicy) 
         return {"passed": False, "value": 0.0, "details": {"reason": "no returns"}}
     invalid: list[dict[str, object]] = []
     for index, value in enumerate(returns):
-        if isinstance(value, bool) or not isinstance(value, (int, float)):
+        if isinstance(value, bool) or not isinstance(value, Real):
             invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
         elif not math.isfinite(value):
             invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
@@ -90,7 +91,7 @@ def _return_integrity(*, strategy: Any, handoff: Any) -> dict[str, Any]:
         return {"passed": False, "value": None, "details": {"error": str(exc)}}
     invalid: list[dict[str, object]] = []
     for index, value in enumerate(returns):
-        if isinstance(value, bool) or not isinstance(value, (int, float)):
+        if isinstance(value, bool) or not isinstance(value, Real):
             invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
         elif not math.isfinite(value):
             invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
@@ -109,7 +110,7 @@ def _walk_forward_consistency(*, strategy: Any, handoff: Any, policy: CriteriaPo
         return {"passed": False, "value": None, "details": {"error": str(exc)}}
     invalid: list[dict[str, object]] = []
     for index, value in enumerate(returns):
-        if isinstance(value, bool) or not isinstance(value, (int, float)):
+        if isinstance(value, bool) or not isinstance(value, Real):
             invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
         elif not math.isfinite(value):
             invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
