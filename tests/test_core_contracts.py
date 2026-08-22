@@ -238,6 +238,19 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(report.status, "FAIL")
         self.assertEqual(len(report.tests_run["T_RETURN_INTEGRITY_001"]["details"]["invalid"]), 2)
 
+    def test_stability_reports_invalid_returns_when_selected_alone(self):
+        class CorruptStrategy(ExampleStrategy):
+            def backtest(self, handoff):
+                return {"returns": [0.1, float("nan"), "bad"]}
+
+        report = Certifier(default_catalog()).certify(
+            CorruptStrategy(), Handoff(), ["T_STABILITY_001"]
+        )
+        result = report.tests_run["T_STABILITY_001"]
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(result["details"]["reason"], "invalid returns")
+        self.assertEqual(result["details"]["invalid"][1]["reason"], "not numeric")
+
     def test_walk_forward_accepts_positive_out_of_sample_rate(self):
         report = Certifier(default_catalog()).certify(
             ExampleStrategy(), Handoff(), ["T_WALK_FORWARD_001"]

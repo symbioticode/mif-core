@@ -56,6 +56,18 @@ def _adaptive_stability(*, strategy: Any, handoff: Any, policy: CriteriaPolicy) 
         return {"passed": False, "value": None, "details": {"error": str(exc)}}
     if not returns:
         return {"passed": False, "value": 0.0, "details": {"reason": "no returns"}}
+    invalid: list[dict[str, object]] = []
+    for index, value in enumerate(returns):
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
+        elif not math.isfinite(value):
+            invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
+    if invalid:
+        return {
+            "passed": False,
+            "value": None,
+            "details": {"reason": "invalid returns", "invalid": invalid},
+        }
     positive_rate = sum(value > 0 for value in returns) / len(returns)
     threshold = policy.positive_rate_for(strategy.metadata.frequency)
     return {
