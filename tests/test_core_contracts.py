@@ -110,6 +110,18 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(MetricCertifier().certify(BadSeries(), Handoff())["status"], "FAIL")
         self.assertEqual(MetricCertifier().certify(BadScalar(), Handoff())["status"], "FAIL")
 
+    def test_metric_certifier_rejects_nonfinite_or_nonnumeric_series_values(self):
+        class BadSeries(MetricAdapter):
+            metadata = MetricMetadata("bad-values", "performance", "series")
+
+            def calculate(self, handoff):
+                return [1.0, float("nan"), "bad"]
+
+        result = MetricCertifier().certify(BadSeries(), Handoff())
+        self.assertEqual(result["status"], "FAIL")
+        self.assertEqual(result["details"]["invalid"][0]["reason"], "not finite")
+        self.assertEqual(result["details"]["invalid"][1]["reason"], "not numeric")
+
     def test_metric_exception_preserves_validity_domain(self):
         class RaisingMetric(MetricAdapter):
             metadata = MetricMetadata("raising", "performance", "scalar")

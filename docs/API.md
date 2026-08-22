@@ -21,7 +21,8 @@ development version when imported directly from a checkout.
 
 - `StrategyAdapter` describes strategy signal and backtest behavior.
 - `MetricAdapter` describes a metric calculated from one certified handoff.
-- `MetricCertifier` validates the declared metric output shape and finiteness.
+- `MetricCertifier` validates the declared metric output shape and finiteness;
+  invalid series or signal indices are included in the failure details.
 - `StrategyMetadata` and `MetricMetadata` make the subject explicit.
 - `StrategyRegistry` and `MetricRegistry` provide explicit name-based lookup.
 - `default_catalog()` returns the shipped offline tests.

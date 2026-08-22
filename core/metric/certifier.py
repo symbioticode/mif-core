@@ -36,11 +36,19 @@ class MetricCertifier:
             except TypeError:
                 actual_length = -1
             expected_length = len(handoff.stream)
-            passed = actual_length == expected_length
+            invalid: list[dict[str, object]] = []
+            if actual_length >= 0:
+                for index, value in enumerate(output):
+                    if isinstance(value, bool) or not isinstance(value, (int, float)):
+                        invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
+                    elif not math.isfinite(value):
+                        invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
+            passed = actual_length == expected_length and not invalid
             details = {
                 "expected_length": expected_length,
                 "actual_length": actual_length,
                 "output_kind": kind,
+                "invalid": invalid,
             }
         else:
             passed = isinstance(output, (int, float)) and not isinstance(output, bool) and math.isfinite(output)
