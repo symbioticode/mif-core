@@ -34,3 +34,4 @@ development version when imported directly from a checkout.
 report export methods. Metric certification results include the same asset,
 calendar, coverage, DQF status, and assembly hash validity domain. CORE does not
 fetch data; production callers provide a `DALHandoff` from `mif-dal-en`.
+Metric results expose `schema_version=1` for forward-compatible consumers.

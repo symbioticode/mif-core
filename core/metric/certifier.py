@@ -23,6 +23,7 @@ class MetricCertifier:
             output = metric.calculate(handoff)
         except Exception as exc:
             return {
+                "schema_version": 1,
                 "metric_name": metric.metadata.name,
                 "metric_version": metric.metadata.version,
                 "status": "FAIL",
@@ -55,6 +56,7 @@ class MetricCertifier:
             passed = isinstance(output, (int, float)) and not isinstance(output, bool) and math.isfinite(output)
             details = {"output_kind": kind, "finite_numeric": passed}
         return {
+            "schema_version": 1,
             "metric_name": metric.metadata.name,
             "metric_version": metric.metadata.version,
             "status": "PASS" if passed else "FAIL",

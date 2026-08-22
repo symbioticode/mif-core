@@ -95,6 +95,7 @@ class CoreContractTests(unittest.TestCase):
 
         result = MetricCertifier().certify(ExampleMetric(), Handoff())
         self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["schema_version"], 1)
         self.assertEqual(result["validity_domain"]["asset_scope"], "BTC-USD")
         self.assertEqual(result["validity_domain"]["coverage"], "FULL")
         self.assertEqual(result["validity_domain"]["assembly_hash"], "a" * 64)
@@ -153,6 +154,7 @@ class CoreContractTests(unittest.TestCase):
 
         result = MetricCertifier().certify(RaisingMetric(), Handoff())
         self.assertEqual(result["status"], "FAIL")
+        self.assertEqual(result["schema_version"], 1)
         self.assertEqual(result["validity_domain"]["asset_scope"], "BTC-USD")
 
     def test_strategy_registry_rejects_duplicates_and_sorts_names(self):
