@@ -10,15 +10,17 @@ mif-dal  → assembles and hands off certified data
 mif-core → qualifies metrics and strategies
 ```
 
-This first increment defines contracts only. Tests are selected explicitly; no
-hidden one-size-fits-all protocol is applied.
+This first increment defines explicit contracts and a deterministic offline
+catalogue. Tests are selected explicitly; no hidden one-size-fits-all protocol
+is applied.
 
 ## Included test catalogue
 
-The package currently ships four offline checks: DAL handoff readiness,
-signal shape, adaptive positive-return stability, and prefix causality
-(look-ahead detection). They are deliberately small building blocks, not a
-complete profitability guarantee.
+The package currently ships six offline checks: DAL handoff readiness, signal
+shape, adaptive positive-return stability, return integrity, minimal
+out-of-sample consistency, and prefix causality (look-ahead detection). They
+are deliberately small building blocks, not a complete profitability
+guarantee.
 
 ## Development
 
@@ -39,9 +41,9 @@ See [`docs/API.md`](docs/API.md) for the supported public surface.
 
 ## Status
 
-Bootstrap implementation based on the documented MIF v5 architecture. The
-architecture file is historically named v5 but declares version 9.0.0; this
-provenance ambiguity is intentionally recorded in `docs/PROVENANCE.md`.
+Development implementation based on the documented MIF v5 architecture. The
+architecture file contains a historical brainstorming version marker; the
+provenance decision is recorded in `docs/PROVENANCE.md`.
 
 ## Test
 

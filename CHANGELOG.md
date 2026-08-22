@@ -13,3 +13,5 @@
 - Added offline handoff, signal-shape, stability, and look-ahead tests.
 - Added normalized reports and transparent S/A/B/C summary tiers.
 - Added explicit `MetricAdapter` and `MetricMetadata` contracts.
+- Added metric and strategy registries, metric output certification, CLI demos,
+  and JSON report serialization.
