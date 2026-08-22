@@ -64,6 +64,12 @@ class CoreContractTests(unittest.TestCase):
     def test_test_result_schema_is_versioned(self):
         result = Result("T", "test", "strategy", True, 1, {})
         self.assertEqual(result.to_dict()["schema_version"], 1)
+        with self.assertRaises(TypeError):
+            Result("T", "test", "strategy", 1, 1, {})
+        with self.assertRaises(TypeError):
+            Result("T", "test", "strategy", True, 1, [],)  # type: ignore[arg-type]
+        with self.assertRaises(TypeError):
+            Result("T", "test", "strategy", True, 1, {}, schema_version=True)
         with self.assertRaises(ValueError):
             Result("T", "test", "strategy", True, 1, {}, schema_version=2)
 

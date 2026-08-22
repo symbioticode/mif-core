@@ -20,6 +20,12 @@ class TestResult:
     def __post_init__(self) -> None:
         if not self.test_id or not self.test_name or not self.category:
             raise ValueError("test identity fields are required")
+        if not isinstance(self.passed, bool):
+            raise TypeError("passed must be a boolean")
+        if not isinstance(self.details, dict):
+            raise TypeError("details must be a dictionary")
+        if isinstance(self.schema_version, bool) or not isinstance(self.schema_version, int):
+            raise TypeError("schema_version must be an integer")
         if self.schema_version != 1:
             raise ValueError("unsupported test result schema version")
 
@@ -39,4 +45,3 @@ class TestResult:
         if self.threshold is not None:
             result["threshold"] = self.threshold
         return result
-
