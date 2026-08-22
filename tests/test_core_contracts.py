@@ -2,6 +2,7 @@ import unittest
 from dataclasses import dataclass
 import json
 from contextlib import redirect_stdout
+from fractions import Fraction
 from io import StringIO
 
 from core import (
@@ -172,6 +173,16 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(result["status"], "FAIL")
         self.assertEqual(result["details"]["invalid"][0]["reason"], "not finite")
         self.assertEqual(result["details"]["invalid"][1]["reason"], "not numeric")
+
+    def test_metric_certifier_accepts_other_real_numeric_types(self):
+        class FractionMetric(MetricAdapter):
+            metadata = MetricMetadata("fraction", "performance", "scalar")
+
+            def calculate(self, handoff):
+                return Fraction(1, 2)
+
+        result = MetricCertifier().certify(FractionMetric(), Handoff())
+        self.assertEqual(result["status"], "PASS")
 
     def test_metric_exception_preserves_validity_domain(self):
         class RaisingMetric(MetricAdapter):
