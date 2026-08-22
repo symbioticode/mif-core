@@ -28,6 +28,11 @@ python -m pytest
 python -m build
 ```
 
+An external strategy can implement `StrategyAdapter` and be certified against
+an explicit list of tests. See `examples/certify_strategy.py` for an offline
+example; production callers should supply the real `DALHandoff` from
+`mif-dal-en`.
+
 ## Status
 
 Bootstrap implementation based on the documented MIF v5 architecture. The
