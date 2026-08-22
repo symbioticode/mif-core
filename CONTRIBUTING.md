@@ -23,4 +23,5 @@ criteria to the core package.
 Releases are published only from a GitHub Release through the protected
 `publish.yml` workflow. Configure PyPI Trusted Publishing for the repository
 before creating the first release; do not add a long-lived PyPI token to the
-repository.
+repository. See [`docs/PUBLISHING.md`](docs/PUBLISHING.md) for the exact
+distribution name and setup checklist.

@@ -49,6 +49,7 @@ example; production callers should supply the real `DALHandoff` from
 
 See [`docs/API.md`](docs/API.md) for the supported public surface.
 See [`docs/ROADMAP.md`](docs/ROADMAP.md) for current limits and next phases.
+See [`docs/PUBLISHING.md`](docs/PUBLISHING.md) for the PyPI release path.
 
 ## Status
 
