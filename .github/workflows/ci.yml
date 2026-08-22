@@ -18,6 +18,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install package and development tools
         run: python -m pip install --upgrade pip && python -m pip install -e '.[dev]'
+      - name: Verify canonical DAL dependency
+        run: python -c "from dal.core.handoff import DALHandoff; print(DALHandoff.__name__)"
       - name: Run tests
         run: python -m pytest
       - name: Build distributions
