@@ -6,7 +6,8 @@ scope small and deterministic.
 1. `StrategyMetadata` describes the strategy explicitly.
 2. `StrategyAdapter` is the boundary between a strategy and CORE.
 3. `MetricAdapter` is the separate boundary for indicator and metric logic.
-4. `MetricCertifier` validates the metric output contract and validity domain.
+4. `MetricCertifier` validates the metric output contract and validity domain;
+   metric checks are independent of strategy backtests.
 5. `StrategyRegistry` names caller-registered strategies without discovery.
 6. `MetricRegistry` names caller-registered metrics without discovery.
 7. `TestCatalog` stores atomic, independently selectable tests.

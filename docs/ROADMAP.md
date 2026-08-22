@@ -16,8 +16,9 @@ because its selected tests pass.
 
 ## Next implementation phases
 
-1. Add metric-specific atomic tests without coupling them to a strategy
-   backtest contract.
+1. Done: metric-specific contract tests now exercise series shape, scalar
+   finiteness, invalid values, exceptions, and validity-domain preservation
+   without using a strategy backtest.
 2. Extend the configurable rolling-window policy with richer train/test
    semantics and reporting.
 3. Add richer human-readable report rendering while preserving JSON as the machine
