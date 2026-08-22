@@ -10,6 +10,8 @@ class MetricRegistry:
         self._metrics: dict[str, MetricAdapter] = {}
 
     def register(self, metric: MetricAdapter) -> None:
+        if not isinstance(metric, MetricAdapter):
+            raise TypeError("metric must implement MetricAdapter")
         name = metric.metadata.name
         if name in self._metrics:
             raise ValueError(f"duplicate metric name: {name}")
@@ -20,4 +22,3 @@ class MetricRegistry:
 
     def names(self) -> tuple[str, ...]:
         return tuple(sorted(self._metrics))
-

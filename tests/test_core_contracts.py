@@ -111,6 +111,8 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(registry.names(), ("return",))
         with self.assertRaises(ValueError):
             registry.register(ExampleMetric())
+        with self.assertRaises(TypeError):
+            registry.register(object())  # type: ignore[arg-type]
 
     def test_metric_certifier_rejects_wrong_series_length_and_nan_scalar(self):
         class BadSeries(MetricAdapter):
@@ -157,6 +159,14 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(registry.names(), ("example",))
         with self.assertRaises(ValueError):
             registry.register(ExampleStrategy())
+        with self.assertRaises(TypeError):
+            registry.register(object())  # type: ignore[arg-type]
+
+    def test_test_definition_validates_identity_and_executor(self):
+        with self.assertRaises(ValueError):
+            Definition("", "name", "category", lambda **_: {})
+        with self.assertRaises(TypeError):
+            Definition("id", "name", "category", object())  # type: ignore[arg-type]
 
     def test_certifier_runs_only_selected_tests(self):
         catalog = Catalog()

@@ -10,6 +10,8 @@ class StrategyRegistry:
         self._strategies: dict[str, StrategyAdapter] = {}
 
     def register(self, strategy: StrategyAdapter) -> None:
+        if not isinstance(strategy, StrategyAdapter):
+            raise TypeError("strategy must implement StrategyAdapter")
         name = strategy.metadata.name
         if name in self._strategies:
             raise ValueError(f"duplicate strategy name: {name}")
@@ -20,4 +22,3 @@ class StrategyRegistry:
 
     def names(self) -> tuple[str, ...]:
         return tuple(sorted(self._strategies))
-
