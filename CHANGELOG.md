@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Continue developing the MIF v5 architecture baseline.
+- Added a protected GitHub Release workflow for future PyPI publication.
 
 ## 0.1.0.dev1
 

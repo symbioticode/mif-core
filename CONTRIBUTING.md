@@ -17,3 +17,10 @@ one precise question and expose its value, pass/fail result, and details.
 
 Do not add network calls, implicit data cleaning, or hidden certification
 criteria to the core package.
+
+## Release path
+
+Releases are published only from a GitHub Release through the protected
+`publish.yml` workflow. Configure PyPI Trusted Publishing for the repository
+before creating the first release; do not add a long-lived PyPI token to the
+repository.
