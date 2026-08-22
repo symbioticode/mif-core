@@ -177,6 +177,8 @@ class CoreContractTests(unittest.TestCase):
             Definition("id", "name", "category", object())  # type: ignore[arg-type]
         with self.assertRaisesRegex(KeyError, "unknown test ID"):
             Catalog().get("missing")
+        with self.assertRaises(TypeError):
+            Catalog().register(object())  # type: ignore[arg-type]
 
     def test_certifier_runs_only_selected_tests(self):
         catalog = Catalog()

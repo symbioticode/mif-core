@@ -23,6 +23,8 @@ class TestCatalog:
         self._tests: dict[str, TestDefinition] = {}
 
     def register(self, definition: TestDefinition) -> None:
+        if not isinstance(definition, TestDefinition):
+            raise TypeError("definition must be a TestDefinition")
         if definition.id in self._tests:
             raise ValueError(f"duplicate test id: {definition.id}")
         self._tests[definition.id] = definition
