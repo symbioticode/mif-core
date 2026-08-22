@@ -18,7 +18,10 @@ class StrategyRegistry:
         self._strategies[name] = strategy
 
     def get(self, name: str) -> StrategyAdapter:
-        return self._strategies[name]
+        try:
+            return self._strategies[name]
+        except KeyError:
+            raise KeyError(f"unknown strategy name: {name}") from None
 
     def names(self) -> tuple[str, ...]:
         return tuple(sorted(self._strategies))

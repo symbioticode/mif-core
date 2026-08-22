@@ -28,7 +28,10 @@ class TestCatalog:
         self._tests[definition.id] = definition
 
     def get(self, test_id: str) -> TestDefinition:
-        return self._tests[test_id]
+        try:
+            return self._tests[test_id]
+        except KeyError:
+            raise KeyError(f"unknown test ID: {test_id}") from None
 
     def as_dict(self) -> Dict[str, TestDefinition]:
         return dict(self._tests)

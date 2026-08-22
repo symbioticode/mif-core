@@ -18,7 +18,10 @@ class MetricRegistry:
         self._metrics[name] = metric
 
     def get(self, name: str) -> MetricAdapter:
-        return self._metrics[name]
+        try:
+            return self._metrics[name]
+        except KeyError:
+            raise KeyError(f"unknown metric name: {name}") from None
 
     def names(self) -> tuple[str, ...]:
         return tuple(sorted(self._metrics))

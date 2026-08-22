@@ -113,6 +113,8 @@ class CoreContractTests(unittest.TestCase):
             registry.register(ExampleMetric())
         with self.assertRaises(TypeError):
             registry.register(object())  # type: ignore[arg-type]
+        with self.assertRaisesRegex(KeyError, "unknown metric name"):
+            registry.get("missing")
 
     def test_metric_certifier_rejects_wrong_series_length_and_nan_scalar(self):
         class BadSeries(MetricAdapter):
@@ -161,12 +163,16 @@ class CoreContractTests(unittest.TestCase):
             registry.register(ExampleStrategy())
         with self.assertRaises(TypeError):
             registry.register(object())  # type: ignore[arg-type]
+        with self.assertRaisesRegex(KeyError, "unknown strategy name"):
+            registry.get("missing")
 
     def test_test_definition_validates_identity_and_executor(self):
         with self.assertRaises(ValueError):
             Definition("", "name", "category", lambda **_: {})
         with self.assertRaises(TypeError):
             Definition("id", "name", "category", object())  # type: ignore[arg-type]
+        with self.assertRaisesRegex(KeyError, "unknown test ID"):
+            Catalog().get("missing")
 
     def test_certifier_runs_only_selected_tests(self):
         catalog = Catalog()
