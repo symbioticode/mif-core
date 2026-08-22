@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mif-core"
+version = "0.1.0.dev1"
+description = "Metric and strategy qualification layer for the Metric Integrity Framework"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Symbioticode"}]
+keywords = ["metric-integrity", "strategy-validation", "quantitative-finance", "mif"]
+classifiers = ["Development Status :: 3 - Alpha", "License :: OSI Approved :: MIT License", "Programming Language :: Python :: 3"]
+dependencies = ["mif-dal>=0.1.0,<1.0.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0", "pytest-cov>=5.0.0", "mypy>=1.9.0", "ruff>=0.4.0"]
+
+[project.urls]
+Homepage = "https://github.com/symbioticode/mif-core"
+Repository = "https://github.com/symbioticode/mif-core"
+Issues = "https://github.com/symbioticode/mif-core/issues"
+
+[tool.setuptools]
+packages = ["core", "core.strategy", "core.testing", "core.certification"]
+
+[tool.setuptools.package-data]
+core = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--tb=short -q"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+ignore_missing_imports = true
