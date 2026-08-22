@@ -29,7 +29,7 @@ development version when imported directly from a checkout.
 - `Certifier` executes only the test IDs selected by the caller.
 - `TestResult` defines the versioned schema used for each normalized test result.
 
-`CertificationReport.to_dict()` and `CertificationReport.to_json()` are the
-stable report export methods. Metric certification results include the same
+`CertificationReport.to_dict()`, `to_json()`, and `to_text()` are the stable
+report export methods. Metric certification results include the same
 asset, calendar, DQF status, and assembly hash validity domain. CORE does not
 fetch data; production callers provide a `DALHandoff` from `mif-dal-en`.

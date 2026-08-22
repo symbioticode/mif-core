@@ -23,3 +23,19 @@ class CertificationReport:
     def to_json(self) -> str:
         """Serialize the report using the stable dictionary representation."""
         return json.dumps(self.to_dict(), sort_keys=True)
+
+    def to_text(self) -> str:
+        """Render a compact human-readable report without losing test detail."""
+        lines = [
+            f"Strategy: {self.strategy_name}",
+            f"Status: {self.status}  Tier: {self.tier}",
+            "Validity: " + ", ".join(
+                f"{key}={value}" for key, value in self.validity_domain.items()
+            ),
+            "Tests:",
+        ]
+        for result in self.tests_run.values():
+            lines.append(
+                f"- {result['test_id']} [{result['status']}] {result['test_name']}"
+            )
+        return "\n".join(lines)

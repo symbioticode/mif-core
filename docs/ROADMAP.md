@@ -20,7 +20,7 @@ because its selected tests pass.
    backtest contract.
 2. Replace the minimal two-half walk-forward check with configurable rolling
    windows and an explicit minimum-sample policy.
-3. Add a human-readable report renderer while preserving JSON as the machine
+3. Add richer human-readable report rendering while preserving JSON as the machine
    contract.
 4. Run the canonical DAL integration suite with real `DALHandoff` objects in
    CI and document the exact dependency matrix.

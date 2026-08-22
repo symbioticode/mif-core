@@ -139,6 +139,8 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(report.to_dict()["strategy_name"], "example")
         self.assertEqual(report.tier, "S")
         self.assertEqual(json.loads(report.to_json())["tier"], "S")
+        self.assertIn("Strategy: example", report.to_text())
+        self.assertIn("T_PASS [PASS]", report.to_text())
 
     def test_certifier_rejects_empty_protocol(self):
         catalog = TestCatalog()
