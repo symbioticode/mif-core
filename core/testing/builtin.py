@@ -90,7 +90,7 @@ def _return_integrity(*, strategy: Any, handoff: Any) -> dict[str, Any]:
 
 
 def _walk_forward_consistency(*, strategy: Any, handoff: Any, policy: CriteriaPolicy) -> dict[str, Any]:
-    """Check that the out-of-sample half retains a non-negative hit rate."""
+    """Check positive-return rates across policy-defined rolling windows."""
     try:
         returns = list(strategy.backtest(handoff)["returns"])
     except Exception as exc:

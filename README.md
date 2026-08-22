@@ -17,8 +17,8 @@ is applied.
 ## Included test catalogue
 
 The package currently ships six offline checks: DAL handoff readiness, signal
-shape, adaptive positive-return stability, return integrity, minimal
-out-of-sample consistency, and prefix causality (look-ahead detection). They
+shape, adaptive positive-return stability, return integrity, configurable
+rolling out-of-sample consistency, and prefix causality (look-ahead detection). They
 are deliberately small building blocks, not a complete profitability
 guarantee.
 
