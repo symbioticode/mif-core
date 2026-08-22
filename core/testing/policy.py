@@ -10,6 +10,8 @@ class CriteriaPolicy:
     low_frequency_positive_rate: float = 0.60
     default_positive_rate: float = 0.50
     out_of_sample_positive_rate: float = 0.50
+    walk_forward_test_fraction: float = 0.50
+    walk_forward_min_test_observations: int = 2
 
     def __post_init__(self) -> None:
         for name in (
@@ -20,6 +22,10 @@ class CriteriaPolicy:
             value = getattr(self, name)
             if not 0.0 <= value <= 1.0:
                 raise ValueError(f"{name} must be in [0, 1]")
+        if not 0.0 < self.walk_forward_test_fraction < 1.0:
+            raise ValueError("walk_forward_test_fraction must be between 0 and 1")
+        if self.walk_forward_min_test_observations < 1:
+            raise ValueError("walk_forward_min_test_observations must be >= 1")
 
     def positive_rate_for(self, frequency: str) -> float:
         return (
@@ -27,4 +33,3 @@ class CriteriaPolicy:
             if frequency == "low"
             else self.default_positive_rate
         )
-

@@ -95,10 +95,19 @@ def _walk_forward_consistency(*, strategy: Any, handoff: Any, policy: CriteriaPo
         returns = list(strategy.backtest(handoff)["returns"])
     except Exception as exc:
         return {"passed": False, "value": None, "details": {"error": str(exc)}}
-    split = len(returns) // 2
+    test_size = max(1, round(len(returns) * policy.walk_forward_test_fraction))
+    split = len(returns) - test_size
     test_returns = returns[split:]
-    if not test_returns:
-        return {"passed": False, "value": 0.0, "details": {"reason": "no out-of-sample observations"}}
+    if len(test_returns) < policy.walk_forward_min_test_observations:
+        return {
+            "passed": False,
+            "value": 0.0,
+            "details": {
+                "reason": "insufficient out-of-sample observations",
+                "test_observations": len(test_returns),
+                "minimum": policy.walk_forward_min_test_observations,
+            },
+        }
     positive_rate = sum(value > 0 for value in test_returns) / len(test_returns)
     return {
         "passed": positive_rate >= policy.out_of_sample_positive_rate,

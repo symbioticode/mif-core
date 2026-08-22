@@ -242,6 +242,17 @@ class CoreContractTests(unittest.TestCase):
         )
         self.assertEqual(report.status, "FAIL")
 
+    def test_walk_forward_rejects_insufficient_test_sample(self):
+        class ShortStrategy(ExampleStrategy):
+            def backtest(self, handoff):
+                return {"returns": [0.1]}
+
+        report = Certifier(default_catalog()).certify(
+            ShortStrategy(), Handoff(), ["T_WALK_FORWARD_001"]
+        )
+        self.assertEqual(report.status, "FAIL")
+        self.assertIn("insufficient", report.tests_run["T_WALK_FORWARD_001"]["details"]["reason"])
+
     def test_stability_rejects_low_frequency_below_threshold(self):
         class LowFrequencyStrategy(ExampleStrategy):
             metadata = StrategyMetadata("low", "low", "1W", 2, 90)
