@@ -1,11 +1,11 @@
 import unittest
 
-from core import Certifier, StrategyAdapter, StrategyMetadata, TestCatalog, TestDefinition
+from core import Certifier, StrategyAdapter, StrategyMetadata, TestCatalog, TestDefinition, default_catalog
 from core.integrations.dal import HandoffContractError
 
 
 class Handoff:
-    stream = object()
+    stream = [1, 2, 3]
     asset_id = "BTC-USD"
     calendar = "CRYPTO_247"
     assembly_hash = "a" * 64
@@ -24,7 +24,7 @@ class ExampleStrategy(StrategyAdapter):
     metadata = StrategyMetadata("example", "medium", "1D", 20, 5, ("crypto",))
 
     def calculate_signals(self, handoff):
-        return []
+        return [0] * len(handoff.stream)
 
     def backtest(self, handoff):
         return {"return": 0.0}
@@ -55,6 +55,22 @@ class CoreContractTests(unittest.TestCase):
         handoff.dqf_status = "FAIL"
         with self.assertRaises(HandoffContractError):
             Certifier(catalog).certify(ExampleStrategy(), handoff, ["T_PASS"])
+
+    def test_builtin_catalog_certifies_signal_shape(self):
+        report = Certifier(default_catalog()).certify(
+            ExampleStrategy(), Handoff(), ["T_HANDOFF_001", "T_SIGNAL_SHAPE_001"]
+        )
+        self.assertEqual(report.status, "PASS")
+
+    def test_builtin_catalog_detects_signal_length_mutation(self):
+        class MutatedStrategy(ExampleStrategy):
+            def calculate_signals(self, handoff):
+                return [0]
+
+        report = Certifier(default_catalog()).certify(
+            MutatedStrategy(), Handoff(), ["T_SIGNAL_SHAPE_001"]
+        )
+        self.assertEqual(report.status, "FAIL")
 
 
 if __name__ == "__main__":
