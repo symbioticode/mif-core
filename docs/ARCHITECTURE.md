@@ -33,5 +33,5 @@ conservative default for weaker evidence or no tests. The tier never hides the
 individual results and is not a profitability claim.
 
 These are deliberately small contracts, not a claim that a strategy is
-profitable. A later phase may add walk-forward and look-ahead tests while
-preserving the same atomic test interface.
+profitable. Future tests can extend the same atomic interface without changing
+the existing contracts.
