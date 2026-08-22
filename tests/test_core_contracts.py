@@ -2,7 +2,7 @@ import unittest
 from dataclasses import dataclass
 import json
 
-from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog, TestDefinition, __version__, default_catalog
+from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, MetricRegistry, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog, TestDefinition, __version__, default_catalog
 from core.certification.tiers import calculate_tier
 from core.cli import main as cli_main
 from core.integrations.dal import HandoffContractError
@@ -74,6 +74,19 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(result["status"], "PASS")
         self.assertEqual(result["validity_domain"]["asset_scope"], "BTC-USD")
         self.assertEqual(result["validity_domain"]["assembly_hash"], "a" * 64)
+
+    def test_metric_registry_rejects_duplicates(self):
+        class ExampleMetric(MetricAdapter):
+            metadata = MetricMetadata("return", "performance", "series")
+
+            def calculate(self, handoff):
+                return [0.1] * len(handoff.stream)
+
+        registry = MetricRegistry()
+        registry.register(ExampleMetric())
+        self.assertEqual(registry.names(), ("return",))
+        with self.assertRaises(ValueError):
+            registry.register(ExampleMetric())
 
     def test_metric_certifier_rejects_wrong_series_length_and_nan_scalar(self):
         class BadSeries(MetricAdapter):
