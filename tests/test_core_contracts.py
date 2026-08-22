@@ -27,7 +27,7 @@ class ExampleStrategy(StrategyAdapter):
         return [0] * len(handoff.stream)
 
     def backtest(self, handoff):
-        return {"return": 0.0}
+        return {"returns": [0.1, -0.02, 0.03, 0.01]}
 
 
 class CoreContractTests(unittest.TestCase):
@@ -71,6 +71,26 @@ class CoreContractTests(unittest.TestCase):
             MutatedStrategy(), Handoff(), ["T_SIGNAL_SHAPE_001"]
         )
         self.assertEqual(report.status, "FAIL")
+
+    def test_stability_uses_frequency_aware_threshold(self):
+        report = Certifier(default_catalog()).certify(
+            ExampleStrategy(), Handoff(), ["T_STABILITY_001"]
+        )
+        self.assertEqual(report.status, "PASS")
+        self.assertEqual(report.tests_run["T_STABILITY_001"]["threshold"], 0.50)
+
+    def test_stability_rejects_low_frequency_below_threshold(self):
+        class LowFrequencyStrategy(ExampleStrategy):
+            metadata = StrategyMetadata("low", "low", "1W", 2, 90)
+
+            def backtest(self, handoff):
+                return {"returns": [0.1, -0.1]}
+
+        report = Certifier(default_catalog()).certify(
+            LowFrequencyStrategy(), Handoff(), ["T_STABILITY_001"]
+        )
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(report.tests_run["T_STABILITY_001"]["threshold"], 0.60)
 
 
 if __name__ == "__main__":
