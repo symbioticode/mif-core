@@ -198,6 +198,12 @@ class CoreContractTests(unittest.TestCase):
     def test_criteria_policy_is_validated_and_injectable(self):
         with self.assertRaises(ValueError):
             CriteriaPolicy(default_positive_rate=1.1)
+        with self.assertRaises(ValueError):
+            CriteriaPolicy(default_positive_rate=True)
+        with self.assertRaises(ValueError):
+            CriteriaPolicy(walk_forward_step=True)
+        with self.assertRaises(ValueError):
+            CriteriaPolicy(walk_forward_train_observations=0)
         policy = CriteriaPolicy(default_positive_rate=0.80)
         report = Certifier(default_catalog(policy)).certify(
             ExampleStrategy(), Handoff(), ["T_STABILITY_001"]
