@@ -35,7 +35,13 @@ class CertificationReport:
             "Tests:",
         ]
         for result in self.tests_run.values():
-            lines.append(
+            line = (
                 f"- {result['test_id']} [{result['status']}] {result['test_name']}"
+                f" value={result['value']}"
             )
+            if result.get("threshold") is not None:
+                line += f" threshold={result['threshold']}"
+            if result.get("details"):
+                line += " details=" + json.dumps(result["details"], sort_keys=True)
+            lines.append(line)
         return "\n".join(lines)
