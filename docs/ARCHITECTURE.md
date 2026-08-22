@@ -20,6 +20,8 @@ The initial catalogue contains three explicit tests:
 - `T_SIGNAL_SHAPE_001` — verifies one signal per observation;
 - `T_STABILITY_001` — computes positive-return rate and selects a threshold
   from `StrategyMetadata.frequency` (`0.60` for low frequency, `0.50` otherwise).
+- `T_LOOKAHEAD_001` — compares full-run and prefix signals to detect future-data
+  influence.
 
 These are deliberately small contracts, not a claim that a strategy is
 profitable. A later phase may add walk-forward and look-ahead tests while
