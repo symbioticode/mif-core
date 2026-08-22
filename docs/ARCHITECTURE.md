@@ -20,6 +20,8 @@ The initial catalogue contains three explicit tests:
 - `T_SIGNAL_SHAPE_001` — verifies one signal per observation;
 - `T_RETURN_INTEGRITY_001` — rejects empty, non-numeric, NaN, and infinite
   backtest returns;
+- `T_WALK_FORWARD_001` — evaluates the positive-return rate on the second
+  half of the backtest as a minimal out-of-sample check;
 - `T_STABILITY_001` — computes positive-return rate and selects a threshold
   from `StrategyMetadata.frequency` (`0.60` for low frequency, `0.50` otherwise).
 - `T_LOOKAHEAD_001` — compares full-run and prefix signals to detect future-data

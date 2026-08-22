@@ -88,6 +88,29 @@ def _return_integrity(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     }
 
 
+def _walk_forward_consistency(*, strategy: Any, handoff: Any) -> dict[str, Any]:
+    """Check that the out-of-sample half retains a non-negative hit rate."""
+    try:
+        returns = list(strategy.backtest(handoff)["returns"])
+    except Exception as exc:
+        return {"passed": False, "value": None, "details": {"error": str(exc)}}
+    split = len(returns) // 2
+    test_returns = returns[split:]
+    if not test_returns:
+        return {"passed": False, "value": 0.0, "details": {"reason": "no out-of-sample observations"}}
+    positive_rate = sum(value > 0 for value in test_returns) / len(test_returns)
+    return {
+        "passed": positive_rate >= 0.50,
+        "value": positive_rate,
+        "threshold": 0.50,
+        "details": {
+            "train_observations": split,
+            "test_observations": len(test_returns),
+            "positive_test_observations": sum(value > 0 for value in test_returns),
+        },
+    }
+
+
 def _no_lookahead(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     """Check that a prefix produces the same signals as the full run prefix."""
     try:
@@ -129,6 +152,9 @@ def default_catalog() -> TestCatalog:
     ))
     catalog.register(TestDefinition(
         "T_RETURN_INTEGRITY_001", "Backtest return integrity", "data_quality", _return_integrity
+    ))
+    catalog.register(TestDefinition(
+        "T_WALK_FORWARD_001", "Out-of-sample consistency", "stability", _walk_forward_consistency
     ))
     catalog.register(TestDefinition(
         "T_LOOKAHEAD_001", "Prefix causality", "indicator", _no_lookahead

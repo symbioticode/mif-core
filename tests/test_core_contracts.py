@@ -137,6 +137,22 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(report.status, "FAIL")
         self.assertEqual(len(report.tests_run["T_RETURN_INTEGRITY_001"]["details"]["invalid"]), 2)
 
+    def test_walk_forward_accepts_positive_out_of_sample_rate(self):
+        report = Certifier(default_catalog()).certify(
+            ExampleStrategy(), Handoff(), ["T_WALK_FORWARD_001"]
+        )
+        self.assertEqual(report.status, "PASS")
+
+    def test_walk_forward_rejects_negative_out_of_sample_rate(self):
+        class DegradingStrategy(ExampleStrategy):
+            def backtest(self, handoff):
+                return {"returns": [0.1, 0.1, -0.1, -0.1]}
+
+        report = Certifier(default_catalog()).certify(
+            DegradingStrategy(), Handoff(), ["T_WALK_FORWARD_001"]
+        )
+        self.assertEqual(report.status, "FAIL")
+
     def test_stability_rejects_low_frequency_below_threshold(self):
         class LowFrequencyStrategy(ExampleStrategy):
             metadata = StrategyMetadata("low", "low", "1W", 2, 90)
