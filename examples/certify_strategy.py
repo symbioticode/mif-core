@@ -39,6 +39,8 @@ handoff = SimpleNamespace(
 )
 
 report = Certifier(default_catalog()).certify(
-    ExampleStrategy(), handoff, ["T_HANDOFF_001", "T_SIGNAL_SHAPE_001", "T_STABILITY_001"]
+    ExampleStrategy(),
+    handoff,
+    ["T_HANDOFF_001", "T_SIGNAL_SHAPE_001", "T_STABILITY_001"],
 )
 print(report.to_dict())

@@ -18,7 +18,9 @@ class CertificationReport:
             raise ValueError("status must be PASS or FAIL")
         if self.tier not in {"S", "A", "B", "C"}:
             raise ValueError("tier must be S, A, B, or C")
-        if not isinstance(self.tests_run, dict) or not isinstance(self.validity_domain, dict):
+        if not isinstance(self.tests_run, dict) or not isinstance(
+            self.validity_domain, dict
+        ):
             raise TypeError("tests_run and validity_domain must be dictionaries")
 
     def to_dict(self) -> Dict[str, Any]:
@@ -39,7 +41,8 @@ class CertificationReport:
         lines = [
             f"Strategy: {self.strategy_name}",
             f"Status: {self.status}  Tier: {self.tier}",
-            "Validity: " + ", ".join(
+            "Validity: "
+            + ", ".join(
                 f"{key}={value}" for key, value in self.validity_domain.items()
             ),
             "Tests:",

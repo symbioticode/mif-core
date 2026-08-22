@@ -14,9 +14,10 @@ class StrategyMetadata:
     asset_classes: Tuple[str, ...] = field(default_factory=tuple)
 
     def __post_init__(self) -> None:
-        if not all(isinstance(value, str) and value for value in (
-            self.name, self.frequency, self.optimal_timeframe
-        )):
+        if not all(
+            isinstance(value, str) and value
+            for value in (self.name, self.frequency, self.optimal_timeframe)
+        ):
             raise ValueError("strategy identity fields must be non-empty strings")
         if self.frequency not in {"high", "medium", "low"}:
             raise ValueError("frequency must be high, medium, or low")

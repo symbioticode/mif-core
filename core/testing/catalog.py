@@ -10,9 +10,10 @@ class TestDefinition:
     execute: Callable[..., Dict[str, Any]]
 
     def __post_init__(self) -> None:
-        if not all(isinstance(value, str) and value for value in (
-            self.id, self.name, self.category
-        )):
+        if not all(
+            isinstance(value, str) and value
+            for value in (self.id, self.name, self.category)
+        ):
             raise ValueError("test identity fields must be non-empty strings")
         if not callable(self.execute):
             raise TypeError("test execute must be callable")

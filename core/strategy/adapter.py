@@ -16,4 +16,3 @@ class StrategyAdapter(ABC):
     @abstractmethod
     def backtest(self, handoff: Any) -> Any:
         """Run a deterministic backtest against one certified handoff."""
-

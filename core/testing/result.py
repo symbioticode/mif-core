@@ -24,7 +24,9 @@ class TestResult:
             raise TypeError("passed must be a boolean")
         if not isinstance(self.details, dict):
             raise TypeError("details must be a dictionary")
-        if isinstance(self.schema_version, bool) or not isinstance(self.schema_version, int):
+        if isinstance(self.schema_version, bool) or not isinstance(
+            self.schema_version, int
+        ):
             raise TypeError("schema_version must be an integer")
         if self.schema_version != 1:
             raise ValueError("unsupported test result schema version")

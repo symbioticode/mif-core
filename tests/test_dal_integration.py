@@ -18,7 +18,10 @@ class CanonicalDalIntegrationTests(unittest.TestCase):
     def make_handoff(self):
         index = pd.date_range("2026-01-01", periods=3, tz="UTC")
         stream = pd.DataFrame(
-            {column: [1.0, 1.1, 1.2] for column in ("open", "high", "low", "close", "volume")},
+            {
+                column: [1.0, 1.1, 1.2]
+                for column in ("open", "high", "low", "close", "volume")
+            },
             index=index,
         )
         return DALHandoff(

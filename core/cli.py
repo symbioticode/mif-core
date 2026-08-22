@@ -34,11 +34,19 @@ class _DemoMetric(MetricAdapter):
 
 def _demo_handoff():
     return SimpleNamespace(
-        stream=[1, 2, 3, 4], asset_id="DEMO", calendar="SYNTHETIC",
-        assembly_hash="a" * 64, handoff_timestamp=object(), dal_version="demo",
-        source_manifest=({"source": "synthetic"},), coverage="FULL",
-        dqf_status="PASS", dqf_mpi=100.0, dqf_version="demo",
-        dqf_report=object(), aqi=100.0,
+        stream=[1, 2, 3, 4],
+        asset_id="DEMO",
+        calendar="SYNTHETIC",
+        assembly_hash="a" * 64,
+        handoff_timestamp=object(),
+        dal_version="demo",
+        source_manifest=({"source": "synthetic"},),
+        coverage="FULL",
+        dqf_status="PASS",
+        dqf_mpi=100.0,
+        dqf_version="demo",
+        dqf_report=object(),
+        aqi=100.0,
     )
 
 
@@ -61,9 +69,12 @@ def main(argv: list[str] | None = None) -> int:
         if args.format == "text":
             print(f"Metric: {result['metric_name']} v{result['metric_version']}")
             print(f"Status: {result['status']}")
-            print("Validity: " + ", ".join(
-                f"{key}={value}" for key, value in result["validity_domain"].items()
-            ))
+            print(
+                "Validity: "
+                + ", ".join(
+                    f"{key}={value}" for key, value in result["validity_domain"].items()
+                )
+            )
         else:
             print(json.dumps(result, indent=2, sort_keys=True))
         return 0

@@ -45,9 +45,21 @@ class MetricCertifier:
             if actual_length >= 0:
                 for index, value in enumerate(output):
                     if isinstance(value, bool) or not isinstance(value, Real):
-                        invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
+                        invalid.append(
+                            {
+                                "index": index,
+                                "value": repr(value),
+                                "reason": "not numeric",
+                            }
+                        )
                     elif not math.isfinite(value):
-                        invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
+                        invalid.append(
+                            {
+                                "index": index,
+                                "value": repr(value),
+                                "reason": "not finite",
+                            }
+                        )
             passed = actual_length == expected_length and not invalid
             details = {
                 "expected_length": expected_length,
@@ -56,7 +68,11 @@ class MetricCertifier:
                 "invalid": invalid,
             }
         else:
-            passed = isinstance(output, Real) and not isinstance(output, bool) and math.isfinite(output)
+            passed = (
+                isinstance(output, Real)
+                and not isinstance(output, bool)
+                and math.isfinite(output)
+            )
             details = {"output_kind": kind, "finite_numeric": passed}
         return {
             "schema_version": 1,

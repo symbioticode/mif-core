@@ -4,7 +4,22 @@ import json
 from contextlib import redirect_stdout
 from io import StringIO
 
-from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, MetricRegistry, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog as Catalog, TestDefinition as Definition, TestResult as Result, __version__, default_catalog
+from core import (
+    Certifier,
+    CriteriaPolicy,
+    MetricAdapter,
+    MetricCertifier,
+    MetricMetadata,
+    MetricRegistry,
+    StrategyAdapter,
+    StrategyMetadata,
+    StrategyRegistry,
+    TestCatalog as Catalog,
+    TestDefinition as Definition,
+    TestResult as Result,
+    __version__,
+    default_catalog,
+)
 from core.certification.tiers import calculate_tier
 from core.certification.report import CertificationReport
 from core.cli import main as cli_main
@@ -76,7 +91,14 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             Result("T", "test", "strategy", 1, 1, {})
         with self.assertRaises(TypeError):
-            Result("T", "test", "strategy", True, 1, [],)  # type: ignore[arg-type]
+            Result(
+                "T",
+                "test",
+                "strategy",
+                True,
+                1,
+                [],
+            )  # type: ignore[arg-type]
         with self.assertRaises(TypeError):
             Result("T", "test", "strategy", True, 1, {}, schema_version=True)
         with self.assertRaises(ValueError):
@@ -132,8 +154,12 @@ class CoreContractTests(unittest.TestCase):
             def calculate(self, handoff):
                 return float("nan")
 
-        self.assertEqual(MetricCertifier().certify(BadSeries(), Handoff())["status"], "FAIL")
-        self.assertEqual(MetricCertifier().certify(BadScalar(), Handoff())["status"], "FAIL")
+        self.assertEqual(
+            MetricCertifier().certify(BadSeries(), Handoff())["status"], "FAIL"
+        )
+        self.assertEqual(
+            MetricCertifier().certify(BadScalar(), Handoff())["status"], "FAIL"
+        )
 
     def test_metric_certifier_rejects_nonfinite_or_nonnumeric_series_values(self):
         class BadSeries(MetricAdapter):
@@ -182,7 +208,9 @@ class CoreContractTests(unittest.TestCase):
 
     def test_certifier_runs_only_selected_tests(self):
         catalog = Catalog()
-        catalog.register(Definition("T_PASS", "pass", "integrity", lambda **_: {"passed": True}))
+        catalog.register(
+            Definition("T_PASS", "pass", "integrity", lambda **_: {"passed": True})
+        )
         report = Certifier(catalog).certify(ExampleStrategy(), Handoff(), ["T_PASS"])
         self.assertEqual(report.status, "PASS")
         self.assertEqual(report.validity_domain["asset_scope"], "BTC-USD")
@@ -208,13 +236,19 @@ class CoreContractTests(unittest.TestCase):
 
     def test_certifier_rejects_duplicate_test_ids(self):
         catalog = Catalog()
-        catalog.register(Definition("T_PASS", "pass", "integrity", lambda **_: {"passed": True}))
+        catalog.register(
+            Definition("T_PASS", "pass", "integrity", lambda **_: {"passed": True})
+        )
         with self.assertRaises(ValueError):
-            Certifier(catalog).certify(ExampleStrategy(), Handoff(), ["T_PASS", "T_PASS"])
+            Certifier(catalog).certify(
+                ExampleStrategy(), Handoff(), ["T_PASS", "T_PASS"]
+            )
 
     def test_certifier_rejects_invalid_dqf_status(self):
         catalog = Catalog()
-        catalog.register(Definition("T_PASS", "pass", "integrity", lambda **_: {"passed": True}))
+        catalog.register(
+            Definition("T_PASS", "pass", "integrity", lambda **_: {"passed": True})
+        )
         handoff = Handoff()
         handoff.dqf_status = "FAIL"
         with self.assertRaises(HandoffContractError):
@@ -224,10 +258,14 @@ class CoreContractTests(unittest.TestCase):
         handoff = Handoff()
         handoff.aqi = float("nan")
         with self.assertRaises(HandoffContractError):
-            Certifier(default_catalog()).certify(ExampleStrategy(), handoff, ["T_HANDOFF_001"])
+            Certifier(default_catalog()).certify(
+                ExampleStrategy(), handoff, ["T_HANDOFF_001"]
+            )
         handoff.aqi = True
         with self.assertRaises(HandoffContractError):
-            Certifier(default_catalog()).certify(ExampleStrategy(), handoff, ["T_HANDOFF_001"])
+            Certifier(default_catalog()).certify(
+                ExampleStrategy(), handoff, ["T_HANDOFF_001"]
+            )
 
     def test_builtin_catalog_certifies_signal_shape(self):
         report = Certifier(default_catalog()).certify(
@@ -247,15 +285,23 @@ class CoreContractTests(unittest.TestCase):
 
     def test_test_exception_becomes_explicit_failure(self):
         catalog = Catalog()
-        catalog.register(Definition("T_RAISE", "raising test", "strategy", lambda **_: 1 / 0))
+        catalog.register(
+            Definition("T_RAISE", "raising test", "strategy", lambda **_: 1 / 0)
+        )
         report = Certifier(catalog).certify(ExampleStrategy(), Handoff(), ["T_RAISE"])
         self.assertEqual(report.status, "FAIL")
-        self.assertEqual(report.tests_run["T_RAISE"]["details"]["error"], "division by zero")
+        self.assertEqual(
+            report.tests_run["T_RAISE"]["details"]["error"], "division by zero"
+        )
 
     def test_tiers_are_deterministic_and_empty_is_conservative(self):
         self.assertEqual(calculate_tier({}), "C")
-        self.assertEqual(calculate_tier({"a": {"passed": True}, "b": {"passed": False}}), "B")
-        self.assertEqual(calculate_tier({"a": {"passed": True}, "b": {"passed": True}}), "S")
+        self.assertEqual(
+            calculate_tier({"a": {"passed": True}, "b": {"passed": False}}), "B"
+        )
+        self.assertEqual(
+            calculate_tier({"a": {"passed": True}, "b": {"passed": True}}), "S"
+        )
 
     def test_certification_report_rejects_invalid_status_and_tier(self):
         with self.assertRaises(ValueError):
@@ -300,7 +346,10 @@ class CoreContractTests(unittest.TestCase):
     def test_cli_demo_can_select_tests(self):
         output = StringIO()
         with redirect_stdout(output):
-            self.assertEqual(cli_main(["demo", "--format", "text", "--tests", "T_SIGNAL_SHAPE_001"]), 0)
+            self.assertEqual(
+                cli_main(["demo", "--format", "text", "--tests", "T_SIGNAL_SHAPE_001"]),
+                0,
+            )
         self.assertIn("T_SIGNAL_SHAPE_001 [PASS]", output.getvalue())
         self.assertNotIn("T_HANDOFF_001", output.getvalue())
 
@@ -333,7 +382,9 @@ class CoreContractTests(unittest.TestCase):
             CorruptStrategy(), Handoff(), ["T_RETURN_INTEGRITY_001"]
         )
         self.assertEqual(report.status, "FAIL")
-        self.assertEqual(len(report.tests_run["T_RETURN_INTEGRITY_001"]["details"]["invalid"]), 2)
+        self.assertEqual(
+            len(report.tests_run["T_RETURN_INTEGRITY_001"]["details"]["invalid"]), 2
+        )
 
     def test_stability_reports_invalid_returns_when_selected_alone(self):
         class CorruptStrategy(ExampleStrategy):
@@ -406,7 +457,9 @@ class CoreContractTests(unittest.TestCase):
             ShortStrategy(), Handoff(), ["T_WALK_FORWARD_001"]
         )
         self.assertEqual(report.status, "FAIL")
-        self.assertIn("insufficient", report.tests_run["T_WALK_FORWARD_001"]["details"]["reason"])
+        self.assertIn(
+            "insufficient", report.tests_run["T_WALK_FORWARD_001"]["details"]["reason"]
+        )
 
     def test_stability_rejects_low_frequency_below_threshold(self):
         class LowFrequencyStrategy(ExampleStrategy):

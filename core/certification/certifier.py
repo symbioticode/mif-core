@@ -14,11 +14,15 @@ class Certifier:
     def __init__(self, catalog: TestCatalog) -> None:
         self.catalog = catalog
 
-    def certify(self, strategy: StrategyAdapter, handoff: Any, test_ids: list[str]) -> CertificationReport:
+    def certify(
+        self, strategy: StrategyAdapter, handoff: Any, test_ids: list[str]
+    ) -> CertificationReport:
         if not isinstance(strategy, StrategyAdapter):
             raise TypeError("strategy must implement StrategyAdapter")
         validate_dal_handoff(handoff)
-        if not isinstance(test_ids, list) or not all(isinstance(test_id, str) for test_id in test_ids):
+        if not isinstance(test_ids, list) or not all(
+            isinstance(test_id, str) for test_id in test_ids
+        ):
             raise TypeError("test_ids must be a list of strings")
         if not test_ids:
             raise ValueError("at least one test must be selected")
@@ -32,7 +36,11 @@ class Certifier:
             try:
                 result = definition.execute(strategy=strategy, handoff=handoff)
             except Exception as exc:
-                result = {"passed": False, "value": None, "details": {"error": str(exc)}}
+                result = {
+                    "passed": False,
+                    "value": None,
+                    "details": {"error": str(exc)},
+                }
             normalized = TestResult(
                 test_id=test_id,
                 test_name=definition.name,
@@ -43,7 +51,11 @@ class Certifier:
                 threshold=result.get("threshold"),
             )
             results[test_id] = normalized.to_dict()
-        status = "PASS" if all(item.get("passed", False) for item in results.values()) else "FAIL"
+        status = (
+            "PASS"
+            if all(item.get("passed", False) for item in results.values())
+            else "FAIL"
+        )
         return CertificationReport(
             strategy_name=strategy.metadata.name,
             tests_run=results,

@@ -12,9 +12,19 @@ class HandoffContractError(ValueError):
 def validate_dal_handoff(handoff: Any) -> None:
     """Validate the public DALHandoff boundary without importing DAL at runtime."""
     required = (
-        "stream", "asset_id", "calendar", "assembly_hash", "handoff_timestamp",
-        "dal_version", "source_manifest", "coverage", "dqf_status", "dqf_mpi",
-        "dqf_version", "dqf_report", "aqi",
+        "stream",
+        "asset_id",
+        "calendar",
+        "assembly_hash",
+        "handoff_timestamp",
+        "dal_version",
+        "source_manifest",
+        "coverage",
+        "dqf_status",
+        "dqf_mpi",
+        "dqf_version",
+        "dqf_report",
+        "aqi",
     )
     missing = [name for name in required if not hasattr(handoff, name)]
     if missing:

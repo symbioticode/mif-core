@@ -3,4 +3,10 @@ from .builtin import default_catalog
 from .policy import CriteriaPolicy
 from .result import TestResult
 
-__all__ = ["TestCatalog", "TestDefinition", "CriteriaPolicy", "TestResult", "default_catalog"]
+__all__ = [
+    "TestCatalog",
+    "TestDefinition",
+    "CriteriaPolicy",
+    "TestResult",
+    "default_catalog",
+]

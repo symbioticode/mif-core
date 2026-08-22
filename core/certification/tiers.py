@@ -11,7 +11,9 @@ def calculate_tier(results: Mapping[str, Mapping[str, object]]) -> str:
     """
     if not results:
         return "C"
-    ratio = sum(item.get("passed", False) is True for item in results.values()) / len(results)
+    ratio = sum(item.get("passed", False) is True for item in results.values()) / len(
+        results
+    )
     if ratio == 1.0:
         return "S"
     if ratio >= 0.80:
@@ -19,4 +21,3 @@ def calculate_tier(results: Mapping[str, Mapping[str, object]]) -> str:
     if ratio >= 0.50:
         return "B"
     return "C"
-

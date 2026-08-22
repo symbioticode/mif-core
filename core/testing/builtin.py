@@ -43,7 +43,9 @@ def _signals_shape(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     }
 
 
-def _adaptive_stability(*, strategy: Any, handoff: Any, policy: CriteriaPolicy) -> dict[str, Any]:
+def _adaptive_stability(
+    *, strategy: Any, handoff: Any, policy: CriteriaPolicy
+) -> dict[str, Any]:
     """Check positive-return rate with frequency-aware thresholds.
 
     Low-frequency strategies use a more conservative minimum sample-independent
@@ -60,9 +62,13 @@ def _adaptive_stability(*, strategy: Any, handoff: Any, policy: CriteriaPolicy) 
     invalid: list[dict[str, object]] = []
     for index, value in enumerate(returns):
         if isinstance(value, bool) or not isinstance(value, Real):
-            invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
+            invalid.append(
+                {"index": index, "value": repr(value), "reason": "not numeric"}
+            )
         elif not math.isfinite(value):
-            invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
+            invalid.append(
+                {"index": index, "value": repr(value), "reason": "not finite"}
+            )
     if invalid:
         return {
             "passed": False,
@@ -92,9 +98,13 @@ def _return_integrity(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     invalid: list[dict[str, object]] = []
     for index, value in enumerate(returns):
         if isinstance(value, bool) or not isinstance(value, Real):
-            invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
+            invalid.append(
+                {"index": index, "value": repr(value), "reason": "not numeric"}
+            )
         elif not math.isfinite(value):
-            invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
+            invalid.append(
+                {"index": index, "value": repr(value), "reason": "not finite"}
+            )
     return {
         "passed": bool(returns) and not invalid,
         "value": len(returns),
@@ -102,7 +112,9 @@ def _return_integrity(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     }
 
 
-def _walk_forward_consistency(*, strategy: Any, handoff: Any, policy: CriteriaPolicy) -> dict[str, Any]:
+def _walk_forward_consistency(
+    *, strategy: Any, handoff: Any, policy: CriteriaPolicy
+) -> dict[str, Any]:
     """Check positive-return rates across policy-defined rolling windows."""
     try:
         returns = list(strategy.backtest(handoff)["returns"])
@@ -111,9 +123,13 @@ def _walk_forward_consistency(*, strategy: Any, handoff: Any, policy: CriteriaPo
     invalid: list[dict[str, object]] = []
     for index, value in enumerate(returns):
         if isinstance(value, bool) or not isinstance(value, Real):
-            invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
+            invalid.append(
+                {"index": index, "value": repr(value), "reason": "not numeric"}
+            )
         elif not math.isfinite(value):
-            invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
+            invalid.append(
+                {"index": index, "value": repr(value), "reason": "not finite"}
+            )
     if invalid:
         return {
             "passed": False,
@@ -137,17 +153,23 @@ def _walk_forward_consistency(*, strategy: Any, handoff: Any, policy: CriteriaPo
         test_start = start + policy.walk_forward_train_observations
         test_returns = returns[test_start : test_start + test_size]
         positive_rate = sum(value > 0 for value in test_returns) / len(test_returns)
-        windows.append({
-            "train_start": start,
-            "test_start": test_start,
-            "test_observations": len(test_returns),
-            "train_observations": policy.walk_forward_train_observations,
-            "positive_rate": positive_rate,
-            "passed": positive_rate >= policy.out_of_sample_positive_rate,
-        })
+        windows.append(
+            {
+                "train_start": start,
+                "test_start": test_start,
+                "test_observations": len(test_returns),
+                "train_observations": policy.walk_forward_train_observations,
+                "positive_rate": positive_rate,
+                "passed": positive_rate >= policy.out_of_sample_positive_rate,
+            }
+        )
         start += policy.walk_forward_step
     if not windows:
-        return {"passed": False, "value": 0.0, "details": {"reason": "no complete walk-forward windows"}}
+        return {
+            "passed": False,
+            "value": 0.0,
+            "details": {"reason": "no complete walk-forward windows"},
+        }
     positive_rate = sum(window["positive_rate"] for window in windows) / len(windows)
     passed = all(window["passed"] for window in windows)
     return {
@@ -183,7 +205,9 @@ def _no_lookahead(*, strategy: Any, handoff: Any) -> dict[str, Any]:
         "details": {
             "prefix_length": midpoint,
             "full_length": len(full_signals),
-            "reason": "prefix signals are stable" if passed else "future data influence detected",
+            "reason": "prefix signals are stable"
+            if passed
+            else "future data influence detected",
         },
     }
 
@@ -192,24 +216,41 @@ def default_catalog(policy: CriteriaPolicy | None = None) -> TestCatalog:
     """Return the small, offline catalogue shipped with the first release."""
     policy = policy or CriteriaPolicy()
     catalog = TestCatalog()
-    catalog.register(TestDefinition(
-        "T_HANDOFF_001", "DAL handoff readiness", "integration", _handoff_ready
-    ))
-    catalog.register(TestDefinition(
-        "T_SIGNAL_SHAPE_001", "Signal shape", "strategy", _signals_shape
-    ))
-    catalog.register(TestDefinition(
-        "T_STABILITY_001", "Adaptive positive-return stability", "stability",
-        lambda **kwargs: _adaptive_stability(policy=policy, **kwargs),
-    ))
-    catalog.register(TestDefinition(
-        "T_RETURN_INTEGRITY_001", "Backtest return integrity", "data_quality", _return_integrity
-    ))
-    catalog.register(TestDefinition(
-        "T_WALK_FORWARD_001", "Out-of-sample consistency", "stability",
-        lambda **kwargs: _walk_forward_consistency(policy=policy, **kwargs),
-    ))
-    catalog.register(TestDefinition(
-        "T_LOOKAHEAD_001", "Prefix causality", "indicator", _no_lookahead
-    ))
+    catalog.register(
+        TestDefinition(
+            "T_HANDOFF_001", "DAL handoff readiness", "integration", _handoff_ready
+        )
+    )
+    catalog.register(
+        TestDefinition("T_SIGNAL_SHAPE_001", "Signal shape", "strategy", _signals_shape)
+    )
+    catalog.register(
+        TestDefinition(
+            "T_STABILITY_001",
+            "Adaptive positive-return stability",
+            "stability",
+            lambda **kwargs: _adaptive_stability(policy=policy, **kwargs),
+        )
+    )
+    catalog.register(
+        TestDefinition(
+            "T_RETURN_INTEGRITY_001",
+            "Backtest return integrity",
+            "data_quality",
+            _return_integrity,
+        )
+    )
+    catalog.register(
+        TestDefinition(
+            "T_WALK_FORWARD_001",
+            "Out-of-sample consistency",
+            "stability",
+            lambda **kwargs: _walk_forward_consistency(policy=policy, **kwargs),
+        )
+    )
+    catalog.register(
+        TestDefinition(
+            "T_LOOKAHEAD_001", "Prefix causality", "indicator", _no_lookahead
+        )
+    )
     return catalog
