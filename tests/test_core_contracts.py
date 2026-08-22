@@ -57,6 +57,14 @@ class CoreContractTests(unittest.TestCase):
     def test_metadata_rejects_unknown_frequency(self):
         with self.assertRaises(ValueError):
             StrategyMetadata("bad", "unknown", "1D", 1, 1)
+        with self.assertRaises(TypeError):
+            StrategyMetadata("bad", "medium", "1D", True, 1)
+        with self.assertRaises(TypeError):
+            StrategyMetadata("bad", "medium", "1D", 1, 1, ["crypto"])  # type: ignore[arg-type]
+        with self.assertRaises(ValueError):
+            MetricMetadata("", "performance", "scalar")
+        with self.assertRaises(ValueError):
+            MetricMetadata("name", "performance", "scalar", 1)  # type: ignore[arg-type]
 
     def test_package_version_is_exposed(self):
         self.assertRegex(__version__, r"^\d+\.\d+\.\d+")
