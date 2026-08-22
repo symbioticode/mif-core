@@ -21,7 +21,7 @@ jobs:
       - name: Verify canonical DAL dependency
         run: python -c "from dal.core.handoff import DALHandoff; print(DALHandoff.__name__)"
       - name: Run tests
-        run: python -m pytest
+        run: python -m pytest --cov=core --cov-report=term-missing --cov-fail-under=90
       - name: Run type checks
         run: python -m mypy core tests
       - name: Check formatting

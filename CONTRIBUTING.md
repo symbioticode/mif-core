@@ -7,7 +7,7 @@ must preserve the boundaries documented in `docs/ARCHITECTURE.md`.
 
 ```bash
 python -m pip install -e '.[dev]'
-python -m pytest
+python -m pytest --cov=core --cov-report=term-missing --cov-fail-under=90
 python -m ruff check core tests
 python -m build
 ```
