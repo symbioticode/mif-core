@@ -18,6 +18,8 @@ class Certifier:
         validate_dal_handoff(handoff)
         if not test_ids:
             raise ValueError("at least one test must be selected")
+        if len(set(test_ids)) != len(test_ids):
+            raise ValueError("test IDs must be unique")
         results: dict[str, dict[str, Any]] = {}
         for test_id in test_ids:
             definition = self.catalog.get(test_id)

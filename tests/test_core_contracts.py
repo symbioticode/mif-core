@@ -178,6 +178,12 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             Certifier(catalog).certify(ExampleStrategy(), Handoff(), [])
 
+    def test_certifier_rejects_duplicate_test_ids(self):
+        catalog = Catalog()
+        catalog.register(Definition("T_PASS", "pass", "integrity", lambda **_: {"passed": True}))
+        with self.assertRaises(ValueError):
+            Certifier(catalog).certify(ExampleStrategy(), Handoff(), ["T_PASS", "T_PASS"])
+
     def test_certifier_rejects_invalid_dqf_status(self):
         catalog = Catalog()
         catalog.register(Definition("T_PASS", "pass", "integrity", lambda **_: {"passed": True}))
