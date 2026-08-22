@@ -24,7 +24,8 @@ because its selected tests pass.
 3. Done: human-readable reports preserve values, thresholds, and details while
    JSON remains the machine contract.
 4. Done: CI imports the canonical `DALHandoff`, runs the integration suite, and
-   covers Python 3.11, 3.12, and 3.13.
+  covers Python 3.11 and 3.12. Python 3.13 is deferred until the canonical
+  `mif-dal` dependency can install its NumPy constraint on that interpreter.
 5. Define a stable `0.1` API and only then prepare the first PyPI release.
 
 Every phase must preserve explicit selection, provenance, deterministic
