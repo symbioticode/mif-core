@@ -23,7 +23,7 @@ Repository = "https://github.com/symbioticode/mif-core"
 Issues = "https://github.com/symbioticode/mif-core/issues"
 
 [tool.setuptools]
-packages = ["core", "core.strategy", "core.testing", "core.certification"]
+packages = ["core", "core.strategy", "core.testing", "core.certification", "core.integrations"]
 
 [tool.setuptools.package-data]
 core = ["py.typed"]
