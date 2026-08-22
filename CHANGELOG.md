@@ -12,3 +12,4 @@
 - Added DAL handoff validation.
 - Added offline handoff, signal-shape, stability, and look-ahead tests.
 - Added normalized reports and transparent S/A/B/C summary tiers.
+- Added explicit `MetricAdapter` and `MetricMetadata` contracts.

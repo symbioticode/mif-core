@@ -26,7 +26,7 @@ Issues = "https://github.com/symbioticode/mif-core/issues"
 mif-core = "core.cli:main"
 
 [tool.setuptools]
-packages = ["core", "core.strategy", "core.testing", "core.certification", "core.integrations"]
+packages = ["core", "core.metric", "core.strategy", "core.testing", "core.certification", "core.integrations"]
 
 [tool.setuptools.package-data]
 core = ["py.typed"]
