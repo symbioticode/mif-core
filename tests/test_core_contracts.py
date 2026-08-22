@@ -186,6 +186,15 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaises(HandoffContractError):
             Certifier(catalog).certify(ExampleStrategy(), handoff, ["T_PASS"])
 
+    def test_dal_boundary_rejects_ambiguous_quality_scores(self):
+        handoff = Handoff()
+        handoff.aqi = float("nan")
+        with self.assertRaises(HandoffContractError):
+            Certifier(default_catalog()).certify(ExampleStrategy(), handoff, ["T_HANDOFF_001"])
+        handoff.aqi = True
+        with self.assertRaises(HandoffContractError):
+            Certifier(default_catalog()).certify(ExampleStrategy(), handoff, ["T_HANDOFF_001"])
+
     def test_builtin_catalog_certifies_signal_shape(self):
         report = Certifier(default_catalog()).certify(
             ExampleStrategy(), Handoff(), ["T_HANDOFF_001", "T_SIGNAL_SHAPE_001"]

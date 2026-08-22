@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from typing import Any
 
 
@@ -17,13 +18,18 @@ def validate_dal_handoff(handoff: Any) -> None:
     missing = [name for name in required if not hasattr(handoff, name)]
     if missing:
         raise HandoffContractError(f"handoff missing DAL fields: {missing}")
+    for name in ("asset_id", "calendar", "assembly_hash", "dal_version", "coverage"):
+        if not isinstance(getattr(handoff, name), str) or not getattr(handoff, name):
+            raise HandoffContractError(f"handoff {name} must be a non-empty string")
+    if not hasattr(handoff.stream, "__len__"):
+        raise HandoffContractError("handoff stream must be sized")
     if handoff.dqf_status not in {"PASS", "WARNING"}:
         raise HandoffContractError(f"unsupported dqf_status: {handoff.dqf_status!r}")
-    if not handoff.asset_id or not handoff.calendar:
-        raise HandoffContractError("handoff asset_id and calendar are required")
     if not isinstance(handoff.source_manifest, tuple) or not handoff.source_manifest:
         raise HandoffContractError("handoff source_manifest must be a non-empty tuple")
-    if not 0.0 <= handoff.aqi <= 100.0:
-        raise HandoffContractError("handoff aqi must be in [0, 100]")
-    if not 0.0 <= handoff.dqf_mpi <= 100.0:
-        raise HandoffContractError("handoff dqf_mpi must be in [0, 100]")
+    for name in ("aqi", "dqf_mpi"):
+        value = getattr(handoff, name)
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise HandoffContractError(f"handoff {name} must be numeric")
+        if not math.isfinite(value) or not 0.0 <= value <= 100.0:
+            raise HandoffContractError(f"handoff {name} must be finite and in [0, 100]")
