@@ -38,6 +38,8 @@ longer distribution name makes the PyPI project unambiguous.
 mif-core catalog
 mif-core demo
 mif-core metric-demo
+mif-core demo --format text
+mif-core metric-demo --format text
 ```
 
 An external strategy can implement `StrategyAdapter` and be certified against

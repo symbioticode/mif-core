@@ -1,6 +1,8 @@
 import unittest
 from dataclasses import dataclass
 import json
+from contextlib import redirect_stdout
+from io import StringIO
 
 from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, MetricRegistry, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog as Catalog, TestDefinition as Definition, TestResult as Result, __version__, default_catalog
 from core.certification.tiers import calculate_tier
@@ -220,6 +222,20 @@ class CoreContractTests(unittest.TestCase):
 
     def test_cli_metric_demo_is_available(self):
         self.assertEqual(cli_main(["metric-demo"]), 0)
+
+    def test_cli_demo_supports_human_readable_output(self):
+        output = StringIO()
+        with redirect_stdout(output):
+            self.assertEqual(cli_main(["demo", "--format", "text"]), 0)
+        self.assertIn("Strategy: demo", output.getvalue())
+        self.assertIn("T_HANDOFF_001 [PASS]", output.getvalue())
+
+    def test_cli_metric_demo_supports_human_readable_output(self):
+        output = StringIO()
+        with redirect_stdout(output):
+            self.assertEqual(cli_main(["metric-demo", "--format", "text"]), 0)
+        self.assertIn("Metric: demo-mean v0.1.0", output.getvalue())
+        self.assertIn("Status: PASS", output.getvalue())
 
     def test_stability_uses_frequency_aware_threshold(self):
         report = Certifier(default_catalog()).certify(

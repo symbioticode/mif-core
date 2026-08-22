@@ -45,6 +45,7 @@ def _demo_handoff():
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="mif-core")
     parser.add_argument("command", choices=("catalog", "demo", "metric-demo"))
+    parser.add_argument("--format", choices=("json", "text"), default="json")
     args = parser.parse_args(argv)
     catalog = default_catalog()
     if args.command == "catalog":
@@ -52,12 +53,23 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{definition.id}\t{definition.category}\t{definition.name}")
         return 0
     if args.command == "metric-demo":
-        print(json.dumps(MetricCertifier().certify(_DemoMetric(), _demo_handoff()), indent=2, sort_keys=True))
+        result = MetricCertifier().certify(_DemoMetric(), _demo_handoff())
+        if args.format == "text":
+            print(f"Metric: {result['metric_name']} v{result['metric_version']}")
+            print(f"Status: {result['status']}")
+            print("Validity: " + ", ".join(
+                f"{key}={value}" for key, value in result["validity_domain"].items()
+            ))
+        else:
+            print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     report = Certifier(catalog).certify(
         _DemoStrategy(), _demo_handoff(), list(catalog.as_dict())
     )
-    print(json.dumps(report.to_dict(), indent=2, sort_keys=True))
+    if args.format == "text":
+        print(report.to_text())
+    else:
+        print(json.dumps(report.to_dict(), indent=2, sort_keys=True))
     return 0 if report.status == "PASS" else 1
 
 
