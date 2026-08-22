@@ -2,8 +2,8 @@
 
 ## Unreleased
 
-- Renamed the PyPI distribution to `metric-integrity-core`; the import package
-  remains `core` and the CLI remains `mif-core`.
+- Named the PyPI distribution `mif-foundation`; the import package remains
+  `core` and the CLI remains `mif-core`.
 - Added configurable rolling walk-forward windows with explicit train/test
   policy and per-window reporting.
 - Added finite/numeric validation and explicit diagnostics for metric and
@@ -19,10 +19,11 @@
   to CI.
 - Updated the protected GitHub Release workflow and PyPI publishing guide.
 
-## 0.1.0.dev1
+## 0.1.0
 
 - Declared the supported Python range as 3.11–3.12, matching the current
   `mif-dal` and NumPy compatibility boundary.
+- Prepared the first stable PyPI release as `mif-foundation`.
 
 - Added `StrategyMetadata` and `StrategyAdapter`.
 - Added explicit `TestCatalog` and `Certifier` contracts.

@@ -18,4 +18,4 @@ be reviewed accordingly.
 ## Supported versions
 
 Only the latest code on `main` is actively maintained while the project is in
-development (`0.1.0.dev1`).
+development (`0.1.0`).

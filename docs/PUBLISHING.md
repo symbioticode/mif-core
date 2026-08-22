@@ -1,7 +1,7 @@
-# Publishing `metric-integrity-core`
+# Publishing `mif-foundation`
 
 The repository is `symbioticode/mif-core`, while the PyPI distribution is
-`metric-integrity-core`. The import package remains `core` and the optional
+`mif-foundation`. The import package remains `core` and the optional
 CLI remains `mif-core`.
 
 The current package metadata supports Python 3.11 and 3.12. Do not advertise a
@@ -10,7 +10,7 @@ resolved.
 
 ## One-time PyPI setup
 
-1. Create the PyPI project configuration for `metric-integrity-core`.
+1. Create the PyPI project configuration for `mif-foundation`.
 2. Add a Trusted Publisher using:
    - owner: `symbioticode`;
    - repository: `mif-core`;
@@ -31,15 +31,16 @@ python -m build
 ```
 
 Check that both artifacts in `dist/` are named
-`metric_integrity_core-<version>.*`, then create and publish a GitHub Release.
+`mif_foundation-<version>.*`, then create and publish a GitHub Release.
 The release event starts the protected workflow, which builds fresh artifacts
 and uploads them to PyPI.
 
-The first release should use a new version (for example `0.1.0`) and should
-be tested in a clean virtual environment with:
+The first stable release uses version `0.1.0`. Future releases must increment
+the version before building or publishing again, and should be tested in a
+clean virtual environment with:
 
 ```bash
-python -m pip install metric-integrity-core
+python -m pip install mif-foundation
 python -c "import core; print(core.__version__)"
 mif-core catalog
 ```
