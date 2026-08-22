@@ -33,6 +33,8 @@ an explicit list of tests. See `examples/certify_strategy.py` for an offline
 example; production callers should supply the real `DALHandoff` from
 `mif-dal-en`.
 
+`examples/certify_metric.py` shows the corresponding metric contract.
+
 See [`docs/API.md`](docs/API.md) for the supported public surface.
 
 ## Status
