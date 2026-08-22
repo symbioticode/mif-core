@@ -4,7 +4,15 @@ import argparse
 import json
 from types import SimpleNamespace
 
-from . import Certifier, StrategyAdapter, StrategyMetadata, default_catalog
+from . import (
+    Certifier,
+    MetricAdapter,
+    MetricCertifier,
+    MetricMetadata,
+    StrategyAdapter,
+    StrategyMetadata,
+    default_catalog,
+)
 
 
 class _DemoStrategy(StrategyAdapter):
@@ -15,6 +23,13 @@ class _DemoStrategy(StrategyAdapter):
 
     def backtest(self, handoff):
         return {"returns": [0.1, -0.02, 0.03, 0.01]}
+
+
+class _DemoMetric(MetricAdapter):
+    metadata = MetricMetadata("demo-mean", "performance", "scalar")
+
+    def calculate(self, handoff):
+        return sum(handoff.stream) / len(handoff.stream)
 
 
 def _demo_handoff():
@@ -29,12 +44,15 @@ def _demo_handoff():
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="mif-core")
-    parser.add_argument("command", choices=("catalog", "demo"))
+    parser.add_argument("command", choices=("catalog", "demo", "metric-demo"))
     args = parser.parse_args(argv)
     catalog = default_catalog()
     if args.command == "catalog":
         for definition in catalog.as_dict().values():
             print(f"{definition.id}\t{definition.category}\t{definition.name}")
+        return 0
+    if args.command == "metric-demo":
+        print(json.dumps(MetricCertifier().certify(_DemoMetric(), _demo_handoff()), indent=2, sort_keys=True))
         return 0
     report = Certifier(catalog).certify(
         _DemoStrategy(), _demo_handoff(), list(catalog.as_dict())

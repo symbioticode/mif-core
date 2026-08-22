@@ -191,6 +191,9 @@ class CoreContractTests(unittest.TestCase):
     def test_cli_demo_is_reproducible(self):
         self.assertEqual(cli_main(["demo"]), 0)
 
+    def test_cli_metric_demo_is_available(self):
+        self.assertEqual(cli_main(["metric-demo"]), 0)
+
     def test_stability_uses_frequency_aware_threshold(self):
         report = Certifier(default_catalog()).certify(
             ExampleStrategy(), Handoff(), ["T_STABILITY_001"]

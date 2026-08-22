@@ -30,6 +30,12 @@ python -m pytest
 python -m build
 ```
 
+```bash
+mif-core catalog
+mif-core demo
+mif-core metric-demo
+```
+
 An external strategy can implement `StrategyAdapter` and be certified against
 an explicit list of tests. See `examples/certify_strategy.py` for an offline
 example; production callers should supply the real `DALHandoff` from
