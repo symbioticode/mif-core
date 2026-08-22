@@ -6,18 +6,19 @@ scope small and deterministic.
 1. `StrategyMetadata` describes the strategy explicitly.
 2. `StrategyAdapter` is the boundary between a strategy and CORE.
 3. `MetricAdapter` is the separate boundary for indicator and metric logic.
-4. `StrategyRegistry` names caller-registered strategies without discovery.
-5. `MetricRegistry` names caller-registered metrics without discovery.
-6. `TestCatalog` stores atomic, independently selectable tests.
-7. `Certifier` executes only the tests named by the caller.
-8. `CertificationReport` records status and validity domain.
+4. `MetricCertifier` validates the metric output contract and validity domain.
+5. `StrategyRegistry` names caller-registered strategies without discovery.
+6. `MetricRegistry` names caller-registered metrics without discovery.
+7. `TestCatalog` stores atomic, independently selectable tests.
+8. `Certifier` executes only the tests named by the caller.
+9. `CertificationReport` records status and validity domain.
 
 The input boundary is one certified `DALHandoff` from `mif-dal-en`. CORE does
 not fetch market data, repair data, or silently replace a failed DQF decision.
 
 ## Shipped offline catalogue
 
-The initial catalogue contains three explicit tests:
+The initial catalogue contains six explicit tests:
 
 - `T_HANDOFF_001` — verifies the DAL boundary;
 - `T_SIGNAL_SHAPE_001` — verifies one signal per observation;
