@@ -2,7 +2,7 @@ import unittest
 from dataclasses import dataclass
 import json
 
-from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, MetricRegistry, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog, TestDefinition, __version__, default_catalog
+from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, MetricRegistry, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog, TestDefinition, TestResult, __version__, default_catalog
 from core.certification.tiers import calculate_tier
 from core.cli import main as cli_main
 from core.integrations.dal import HandoffContractError
@@ -58,6 +58,12 @@ class CoreContractTests(unittest.TestCase):
 
     def test_package_version_is_exposed(self):
         self.assertRegex(__version__, r"^\d+\.\d+\.\d+")
+
+    def test_test_result_schema_is_versioned(self):
+        result = TestResult("T", "test", "strategy", True, 1, {})
+        self.assertEqual(result.to_dict()["schema_version"], 1)
+        with self.assertRaises(ValueError):
+            TestResult("T", "test", "strategy", True, 1, {}, schema_version=2)
 
     def test_metric_contract_requires_declared_output_kind(self):
         class ExampleMetric(MetricAdapter):

@@ -27,6 +27,7 @@ development version when imported directly from a checkout.
 - `default_catalog()` returns the shipped offline tests.
 - `CriteriaPolicy` makes adaptive thresholds explicit.
 - `Certifier` executes only the test IDs selected by the caller.
+- `TestResult` defines the versioned schema used for each normalized test result.
 
 `CertificationReport.to_dict()` and `CertificationReport.to_json()` are the
 stable report export methods. Metric certification results include the same

@@ -2,6 +2,7 @@ from typing import Any
 
 from ..strategy import StrategyAdapter
 from ..testing import TestCatalog
+from ..testing import TestResult
 from ..integrations.dal import validate_dal_handoff
 from .report import CertificationReport
 from .tiers import calculate_tier
@@ -24,17 +25,16 @@ class Certifier:
                 result = definition.execute(strategy=strategy, handoff=handoff)
             except Exception as exc:
                 result = {"passed": False, "value": None, "details": {"error": str(exc)}}
-            results[test_id] = {
-                "test_id": test_id,
-                "test_name": definition.name,
-                "category": definition.category,
-                "status": "PASS" if result.get("passed", False) else "FAIL",
-                "severity": "ERROR" if not result.get("passed", False) else "INFO",
-                "interpretation": (
-                    "Test passed" if result.get("passed", False) else "Test failed"
-                ),
-                **result,
-            }
+            normalized = TestResult(
+                test_id=test_id,
+                test_name=definition.name,
+                category=definition.category,
+                passed=result.get("passed", False) is True,
+                value=result.get("value"),
+                details=result.get("details", {}),
+                threshold=result.get("threshold"),
+            )
+            results[test_id] = normalized.to_dict()
         status = "PASS" if all(item.get("passed", False) for item in results.values()) else "FAIL"
         return CertificationReport(
             strategy_name=strategy.metadata.name,

@@ -16,17 +16,15 @@ because its selected tests pass.
 
 ## Next implementation phases
 
-1. Add a formal `TestResult` schema and version it independently from the
-   package.
-2. Add metric-specific atomic tests without coupling them to a strategy
+1. Add metric-specific atomic tests without coupling them to a strategy
    backtest contract.
-3. Replace the minimal two-half walk-forward check with configurable rolling
+2. Replace the minimal two-half walk-forward check with configurable rolling
    windows and an explicit minimum-sample policy.
-4. Add a human-readable report renderer while preserving JSON as the machine
+3. Add a human-readable report renderer while preserving JSON as the machine
    contract.
-5. Run the canonical DAL integration suite with real `DALHandoff` objects in
+4. Run the canonical DAL integration suite with real `DALHandoff` objects in
    CI and document the exact dependency matrix.
-6. Define a stable `0.1` API and only then prepare the first PyPI release.
+5. Define a stable `0.1` API and only then prepare the first PyPI release.
 
 Every phase must preserve explicit selection, provenance, deterministic
 offline tests, and transparent failure details.
