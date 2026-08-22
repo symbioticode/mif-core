@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 from dataclasses import is_dataclass, replace
 import math
-from typing import Any
+from typing import Any, cast
 
 from .catalog import TestCatalog, TestDefinition
 from .policy import CriteriaPolicy
@@ -166,7 +166,7 @@ def _no_lookahead(*, strategy: Any, handoff: Any) -> dict[str, Any]:
         stream = handoff.stream
         midpoint = max(1, len(stream) // 2)
         if is_dataclass(handoff):
-            prefix_handoff = replace(handoff, stream=stream[:midpoint])
+            prefix_handoff = replace(cast(Any, handoff), stream=stream[:midpoint])
         else:
             prefix_handoff = copy.copy(handoff)
             prefix_handoff.stream = stream[:midpoint]
