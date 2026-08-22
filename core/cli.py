@@ -11,6 +11,7 @@ from . import (
     MetricMetadata,
     StrategyAdapter,
     StrategyMetadata,
+    __version__,
     default_catalog,
 )
 
@@ -52,6 +53,7 @@ def _demo_handoff():
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="mif-core")
+    parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument("command", choices=("catalog", "demo", "metric-demo"))
     parser.add_argument("--format", choices=("json", "text"), default="json")
     parser.add_argument(

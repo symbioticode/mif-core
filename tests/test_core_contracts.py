@@ -341,6 +341,11 @@ class CoreContractTests(unittest.TestCase):
     def test_cli_catalog_is_available(self):
         self.assertEqual(cli_main(["catalog"]), 0)
 
+    def test_cli_version_is_available(self):
+        with self.assertRaises(SystemExit) as raised:
+            cli_main(["--version"])
+        self.assertEqual(raised.exception.code, 0)
+
     def test_cli_demo_is_reproducible(self):
         self.assertEqual(cli_main(["demo"]), 0)
 

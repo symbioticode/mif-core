@@ -36,6 +36,7 @@ longer distribution name makes the PyPI project unambiguous.
 
 ```bash
 mif-core catalog
+mif-core --version
 mif-core demo
 mif-core metric-demo
 mif-core demo --format text
