@@ -4,6 +4,10 @@ The repository is `symbioticode/mif-core`, while the PyPI distribution is
 `metric-integrity-core`. The import package remains `core` and the optional
 CLI remains `mif-core`.
 
+The current package metadata supports Python 3.11 and 3.12. Do not advertise a
+Python 3.13 release until the `mif-dal`/NumPy compatibility constraint is
+resolved.
+
 ## One-time PyPI setup
 
 1. Create the PyPI project configuration for `metric-integrity-core`.

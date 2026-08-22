@@ -34,6 +34,12 @@ The published distribution is named `metric-integrity-core` on PyPI. The
 import package and command remain `core` and `mif-core` respectively; the
 longer distribution name makes the PyPI project unambiguous.
 
+## Supported Python versions
+
+The current release supports Python 3.11 and 3.12. Python 3.13 support is
+deferred because the canonical `mif-dal` dependency currently requires a
+NumPy version without a compatible Python 3.13 distribution.
+
 ```bash
 mif-core catalog
 mif-core --version

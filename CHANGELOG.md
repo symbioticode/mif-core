@@ -21,6 +21,9 @@
 
 ## 0.1.0.dev1
 
+- Declared the supported Python range as 3.11–3.12, matching the current
+  `mif-dal` and NumPy compatibility boundary.
+
 - Added `StrategyMetadata` and `StrategyAdapter`.
 - Added explicit `TestCatalog` and `Certifier` contracts.
 - Added DAL handoff validation.
