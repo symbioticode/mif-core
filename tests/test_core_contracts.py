@@ -120,6 +120,23 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(report.status, "PASS")
         self.assertEqual(report.tests_run["T_STABILITY_001"]["threshold"], 0.50)
 
+    def test_return_integrity_accepts_finite_numeric_returns(self):
+        report = Certifier(default_catalog()).certify(
+            ExampleStrategy(), Handoff(), ["T_RETURN_INTEGRITY_001"]
+        )
+        self.assertEqual(report.status, "PASS")
+
+    def test_return_integrity_rejects_nan_and_infinity(self):
+        class CorruptStrategy(ExampleStrategy):
+            def backtest(self, handoff):
+                return {"returns": [0.1, float("nan"), float("inf")]}
+
+        report = Certifier(default_catalog()).certify(
+            CorruptStrategy(), Handoff(), ["T_RETURN_INTEGRITY_001"]
+        )
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(len(report.tests_run["T_RETURN_INTEGRITY_001"]["details"]["invalid"]), 2)
+
     def test_stability_rejects_low_frequency_below_threshold(self):
         class LowFrequencyStrategy(ExampleStrategy):
             metadata = StrategyMetadata("low", "low", "1W", 2, 90)

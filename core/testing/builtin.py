@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 from dataclasses import is_dataclass, replace
+import math
 from typing import Any
 
 from .catalog import TestCatalog, TestDefinition
@@ -68,6 +69,25 @@ def _adaptive_stability(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     }
 
 
+def _return_integrity(*, strategy: Any, handoff: Any) -> dict[str, Any]:
+    """Reject missing, non-numeric, NaN, or infinite backtest returns."""
+    try:
+        returns = list(strategy.backtest(handoff)["returns"])
+    except Exception as exc:
+        return {"passed": False, "value": None, "details": {"error": str(exc)}}
+    invalid: list[dict[str, object]] = []
+    for index, value in enumerate(returns):
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
+        elif not math.isfinite(value):
+            invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
+    return {
+        "passed": bool(returns) and not invalid,
+        "value": len(returns),
+        "details": {"observations": len(returns), "invalid": invalid},
+    }
+
+
 def _no_lookahead(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     """Check that a prefix produces the same signals as the full run prefix."""
     try:
@@ -106,6 +126,9 @@ def default_catalog() -> TestCatalog:
     ))
     catalog.register(TestDefinition(
         "T_STABILITY_001", "Adaptive positive-return stability", "stability", _adaptive_stability
+    ))
+    catalog.register(TestDefinition(
+        "T_RETURN_INTEGRITY_001", "Backtest return integrity", "data_quality", _return_integrity
     ))
     catalog.register(TestDefinition(
         "T_LOOKAHEAD_001", "Prefix causality", "indicator", _no_lookahead
