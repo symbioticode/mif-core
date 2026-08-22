@@ -21,7 +21,7 @@ jobs:
       - name: Install package and development tools
         run: >-
           python -m pip install --upgrade pip &&
-          python -m pip install --prefer-binary --timeout 60 --retries 2 -e '.[dev]'
+          python -m pip install --only-binary=:all: --timeout 60 --retries 2 -e '.[dev]'
       - name: Verify canonical DAL dependency
         run: python -c "from dal.core.handoff import DALHandoff; print(DALHandoff.__name__)"
       - name: Run tests
