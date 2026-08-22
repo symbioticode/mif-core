@@ -8,6 +8,7 @@ class CertificationReport:
     tests_run: Dict[str, Dict[str, Any]]
     status: str
     validity_domain: Dict[str, Any]
+    tier: str = "C"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -15,4 +16,5 @@ class CertificationReport:
             "status": self.status,
             "tests_run": self.tests_run,
             "validity_domain": self.validity_domain,
+            "tier": self.tier,
         }

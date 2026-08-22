@@ -23,6 +23,11 @@ The initial catalogue contains three explicit tests:
 - `T_LOOKAHEAD_001` — compares full-run and prefix signals to detect future-data
   influence.
 
+The report also exposes a summary tier. `S` means every selected test passed;
+`A` means at least 80% passed; `B` means at least 50% passed; `C` is the
+conservative default for weaker evidence or no tests. The tier never hides the
+individual results and is not a profitability claim.
+
 These are deliberately small contracts, not a claim that a strategy is
 profitable. A later phase may add walk-forward and look-ahead tests while
 preserving the same atomic test interface.

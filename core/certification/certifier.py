@@ -4,6 +4,7 @@ from ..strategy import StrategyAdapter
 from ..testing import TestCatalog
 from ..integrations.dal import validate_dal_handoff
 from .report import CertificationReport
+from .tiers import calculate_tier
 
 
 class Certifier:
@@ -46,4 +47,5 @@ class Certifier:
                 "dqf_status": handoff.dqf_status,
                 "assembly_hash": handoff.assembly_hash,
             },
+            tier=calculate_tier(results),
         )

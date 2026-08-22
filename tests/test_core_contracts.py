@@ -1,6 +1,7 @@
 import unittest
 
 from core import Certifier, StrategyAdapter, StrategyMetadata, TestCatalog, TestDefinition, default_catalog
+from core.certification.tiers import calculate_tier
 from core.integrations.dal import HandoffContractError
 
 
@@ -44,6 +45,7 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(report.validity_domain["assembly_hash"], "a" * 64)
         self.assertEqual(report.tests_run["T_PASS"]["status"], "PASS")
         self.assertEqual(report.to_dict()["strategy_name"], "example")
+        self.assertEqual(report.tier, "S")
 
     def test_certifier_rejects_empty_protocol(self):
         catalog = TestCatalog()
@@ -80,6 +82,11 @@ class CoreContractTests(unittest.TestCase):
         report = Certifier(catalog).certify(ExampleStrategy(), Handoff(), ["T_RAISE"])
         self.assertEqual(report.status, "FAIL")
         self.assertEqual(report.tests_run["T_RAISE"]["details"]["error"], "division by zero")
+
+    def test_tiers_are_deterministic_and_empty_is_conservative(self):
+        self.assertEqual(calculate_tier({}), "C")
+        self.assertEqual(calculate_tier({"a": {"passed": True}, "b": {"passed": False}}), "B")
+        self.assertEqual(calculate_tier({"a": {"passed": True}, "b": {"passed": True}}), "S")
 
     def test_stability_uses_frequency_aware_threshold(self):
         report = Certifier(default_catalog()).certify(
