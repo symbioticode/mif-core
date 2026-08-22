@@ -7,7 +7,8 @@ Primary architecture source:
 The document is titled `MIF v5 - Architecture Définitive & Manifeste`. Its
 metadata contains a brainstorming version marker (`9.0.0`), but MIF v5 is the
 last architecture proposal. The package development version remains
-independent at `0.1.0.dev1`.
+independent at `0.1.0.dev1`; its PyPI distribution name is
+`metric-integrity-core`.
 
 Canonical implementation dependencies:
 

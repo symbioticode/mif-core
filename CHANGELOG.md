@@ -2,8 +2,16 @@
 
 ## Unreleased
 
-- Continue developing the MIF v5 architecture baseline.
-- Added a protected GitHub Release workflow for future PyPI publication.
+- Renamed the PyPI distribution to `metric-integrity-core`; the import package
+  remains `core` and the CLI remains `mif-core`.
+- Added configurable rolling walk-forward windows with explicit train/test
+  policy and per-window reporting.
+- Added finite/numeric validation and explicit diagnostics for metric and
+  strategy returns.
+- Added human-readable CLI and certification report output alongside JSON.
+- Added Python 3.13, canonical DAL import, mypy, and artifact metadata checks
+  to CI.
+- Updated the protected GitHub Release workflow and PyPI publishing guide.
 
 ## 0.1.0.dev1
 
