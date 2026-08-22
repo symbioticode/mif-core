@@ -1,4 +1,5 @@
 import unittest
+from dataclasses import dataclass
 
 from core import Certifier, StrategyAdapter, StrategyMetadata, TestCatalog, TestDefinition, default_catalog
 from core.certification.tiers import calculate_tier
@@ -19,6 +20,23 @@ class Handoff:
     dqf_version = "1.3.0"
     dqf_report = object()
     aqi = 100.0
+
+
+@dataclass(frozen=True)
+class FrozenHandoff:
+    stream: list
+    asset_id: str = "BTC-USD"
+    calendar: str = "CRYPTO_247"
+    assembly_hash: str = "a" * 64
+    handoff_timestamp: object = object()
+    dal_version: str = "0.1.0"
+    source_manifest: tuple = ({"source": "memory"},)
+    coverage: str = "FULL"
+    dqf_status: str = "PASS"
+    dqf_mpi: float = 100.0
+    dqf_version: str = "1.3.0"
+    dqf_report: object = object()
+    aqi: float = 100.0
 
 
 class ExampleStrategy(StrategyAdapter):
@@ -111,6 +129,12 @@ class CoreContractTests(unittest.TestCase):
     def test_lookahead_test_accepts_causal_strategy(self):
         report = Certifier(default_catalog()).certify(
             ExampleStrategy(), Handoff(), ["T_LOOKAHEAD_001"]
+        )
+        self.assertEqual(report.status, "PASS")
+
+    def test_lookahead_supports_frozen_dal_handoff(self):
+        report = Certifier(default_catalog()).certify(
+            ExampleStrategy(), FrozenHandoff([1, 2, 3]), ["T_LOOKAHEAD_001"]
         )
         self.assertEqual(report.status, "PASS")
 

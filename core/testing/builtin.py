@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from dataclasses import is_dataclass, replace
 from typing import Any
 
 from .catalog import TestCatalog, TestDefinition
@@ -72,8 +73,11 @@ def _no_lookahead(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     try:
         stream = handoff.stream
         midpoint = max(1, len(stream) // 2)
-        prefix_handoff = copy.copy(handoff)
-        prefix_handoff.stream = stream[:midpoint]
+        if is_dataclass(handoff):
+            prefix_handoff = replace(handoff, stream=stream[:midpoint])
+        else:
+            prefix_handoff = copy.copy(handoff)
+            prefix_handoff.stream = stream[:midpoint]
         full_signals = list(strategy.calculate_signals(handoff))
         prefix_signals = list(strategy.calculate_signals(prefix_handoff))
         expected = full_signals[:midpoint]
