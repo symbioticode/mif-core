@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from core import Certifier, StrategyAdapter, StrategyMetadata, TestCatalog, TestDefinition, default_catalog
 from core.certification.tiers import calculate_tier
+from core.cli import main as cli_main
 from core.integrations.dal import HandoffContractError
 
 
@@ -105,6 +106,12 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(calculate_tier({}), "C")
         self.assertEqual(calculate_tier({"a": {"passed": True}, "b": {"passed": False}}), "B")
         self.assertEqual(calculate_tier({"a": {"passed": True}, "b": {"passed": True}}), "S")
+
+    def test_cli_catalog_is_available(self):
+        self.assertEqual(cli_main(["catalog"]), 0)
+
+    def test_cli_demo_is_reproducible(self):
+        self.assertEqual(cli_main(["demo"]), 0)
 
     def test_stability_uses_frequency_aware_threshold(self):
         report = Certifier(default_catalog()).certify(

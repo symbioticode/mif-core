@@ -22,6 +22,9 @@ Homepage = "https://github.com/symbioticode/mif-core"
 Repository = "https://github.com/symbioticode/mif-core"
 Issues = "https://github.com/symbioticode/mif-core/issues"
 
+[project.scripts]
+mif-core = "core.cli:main"
+
 [tool.setuptools]
 packages = ["core", "core.strategy", "core.testing", "core.certification", "core.integrations"]
 
