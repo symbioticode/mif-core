@@ -19,12 +19,12 @@ because its selected tests pass.
 1. Done: metric-specific contract tests now exercise series shape, scalar
    finiteness, invalid values, exceptions, and validity-domain preservation
    without using a strategy backtest.
-2. Extend the configurable rolling-window policy with richer train/test
-   semantics and reporting.
-3. Add richer human-readable report rendering while preserving JSON as the machine
-   contract.
-4. Run the canonical DAL integration suite with real `DALHandoff` objects in
-   CI and document the exact dependency matrix.
+2. Done: configurable rolling windows now expose train observations, test
+   fraction, step, per-window outcomes, and aggregate reporting.
+3. Done: human-readable reports preserve values, thresholds, and details while
+   JSON remains the machine contract.
+4. Done: CI imports the canonical `DALHandoff`, runs the integration suite, and
+   covers Python 3.11, 3.12, and 3.13.
 5. Define a stable `0.1` API and only then prepare the first PyPI release.
 
 Every phase must preserve explicit selection, provenance, deterministic
