@@ -99,6 +99,8 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(result["validity_domain"]["asset_scope"], "BTC-USD")
         self.assertEqual(result["validity_domain"]["coverage"], "FULL")
         self.assertEqual(result["validity_domain"]["assembly_hash"], "a" * 64)
+        with self.assertRaises(TypeError):
+            MetricCertifier().certify(object(), Handoff())  # type: ignore[arg-type]
 
     def test_metric_registry_rejects_duplicates(self):
         class ExampleMetric(MetricAdapter):
@@ -195,6 +197,8 @@ class CoreContractTests(unittest.TestCase):
         catalog = Catalog()
         with self.assertRaises(ValueError):
             Certifier(catalog).certify(ExampleStrategy(), Handoff(), [])
+        with self.assertRaises(TypeError):
+            Certifier(catalog).certify(object(), Handoff(), ["T_PASS"])  # type: ignore[arg-type]
 
     def test_certifier_rejects_duplicate_test_ids(self):
         catalog = Catalog()

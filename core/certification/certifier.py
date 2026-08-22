@@ -15,6 +15,8 @@ class Certifier:
         self.catalog = catalog
 
     def certify(self, strategy: StrategyAdapter, handoff: Any, test_ids: list[str]) -> CertificationReport:
+        if not isinstance(strategy, StrategyAdapter):
+            raise TypeError("strategy must implement StrategyAdapter")
         validate_dal_handoff(handoff)
         if not test_ids:
             raise ValueError("at least one test must be selected")

@@ -11,6 +11,8 @@ class MetricCertifier:
     """Validate a metric's declared output contract against one DAL handoff."""
 
     def certify(self, metric: MetricAdapter, handoff: Any) -> dict[str, Any]:
+        if not isinstance(metric, MetricAdapter):
+            raise TypeError("metric must implement MetricAdapter")
         validate_dal_handoff(handoff)
         validity_domain = {
             "asset_scope": handoff.asset_id,
