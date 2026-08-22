@@ -27,3 +27,10 @@ jobs:
       - name: Build distributions
         if: matrix.python-version == '3.12'
         run: python -m pip install build && python -m build
+      - name: Verify distribution metadata
+        if: matrix.python-version == '3.12'
+        run: |
+          python -m pip install --force-reinstall --no-deps dist/*.whl
+          python -c "from importlib.metadata import version; assert version('metric-integrity-core') == '0.1.0.dev1'"
+          test -f dist/metric_integrity_core-0.1.0.dev1-py3-none-any.whl
+          test -f dist/metric_integrity_core-0.1.0.dev1.tar.gz
