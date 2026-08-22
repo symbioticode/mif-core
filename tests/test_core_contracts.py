@@ -6,6 +6,7 @@ from io import StringIO
 
 from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, MetricRegistry, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog as Catalog, TestDefinition as Definition, TestResult as Result, __version__, default_catalog
 from core.certification.tiers import calculate_tier
+from core.certification.report import CertificationReport
 from core.cli import main as cli_main
 from core.integrations.dal import HandoffContractError
 
@@ -212,6 +213,14 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(calculate_tier({}), "C")
         self.assertEqual(calculate_tier({"a": {"passed": True}, "b": {"passed": False}}), "B")
         self.assertEqual(calculate_tier({"a": {"passed": True}, "b": {"passed": True}}), "S")
+
+    def test_certification_report_rejects_invalid_status_and_tier(self):
+        with self.assertRaises(ValueError):
+            CertificationReport("example", {}, "UNKNOWN", {})
+        with self.assertRaises(ValueError):
+            CertificationReport("example", {}, "PASS", {}, tier="D")
+        with self.assertRaises(TypeError):
+            CertificationReport("example", [], "PASS", {})  # type: ignore[arg-type]
 
     def test_criteria_policy_is_validated_and_injectable(self):
         with self.assertRaises(ValueError):

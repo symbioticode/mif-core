@@ -11,6 +11,16 @@ class CertificationReport:
     validity_domain: Dict[str, Any]
     tier: str = "C"
 
+    def __post_init__(self) -> None:
+        if not isinstance(self.strategy_name, str) or not self.strategy_name:
+            raise ValueError("strategy_name must be a non-empty string")
+        if self.status not in {"PASS", "FAIL"}:
+            raise ValueError("status must be PASS or FAIL")
+        if self.tier not in {"S", "A", "B", "C"}:
+            raise ValueError("tier must be S, A, B, or C")
+        if not isinstance(self.tests_run, dict) or not isinstance(self.validity_domain, dict):
+            raise TypeError("tests_run and validity_domain must be dictionaries")
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "strategy_name": self.strategy_name,
