@@ -18,8 +18,12 @@ class Certifier:
         if not isinstance(strategy, StrategyAdapter):
             raise TypeError("strategy must implement StrategyAdapter")
         validate_dal_handoff(handoff)
+        if not isinstance(test_ids, list) or not all(isinstance(test_id, str) for test_id in test_ids):
+            raise TypeError("test_ids must be a list of strings")
         if not test_ids:
             raise ValueError("at least one test must be selected")
+        if any(not test_id for test_id in test_ids):
+            raise ValueError("test IDs must be non-empty")
         if len(set(test_ids)) != len(test_ids):
             raise ValueError("test IDs must be unique")
         results: dict[str, dict[str, Any]] = {}

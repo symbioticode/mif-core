@@ -200,6 +200,10 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             Certifier(catalog).certify(ExampleStrategy(), Handoff(), [])
         with self.assertRaises(TypeError):
+            Certifier(catalog).certify(ExampleStrategy(), Handoff(), "T_PASS")  # type: ignore[arg-type]
+        with self.assertRaises(ValueError):
+            Certifier(catalog).certify(ExampleStrategy(), Handoff(), [""])
+        with self.assertRaises(TypeError):
             Certifier(catalog).certify(object(), Handoff(), ["T_PASS"])  # type: ignore[arg-type]
 
     def test_certifier_rejects_duplicate_test_ids(self):
