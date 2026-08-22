@@ -92,6 +92,23 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(report.status, "FAIL")
         self.assertEqual(report.tests_run["T_STABILITY_001"]["threshold"], 0.60)
 
+    def test_lookahead_test_accepts_causal_strategy(self):
+        report = Certifier(default_catalog()).certify(
+            ExampleStrategy(), Handoff(), ["T_LOOKAHEAD_001"]
+        )
+        self.assertEqual(report.status, "PASS")
+
+    def test_lookahead_test_rejects_future_dependent_strategy(self):
+        class LeakingStrategy(ExampleStrategy):
+            def calculate_signals(self, handoff):
+                future = handoff.stream[-1]
+                return [future] * len(handoff.stream)
+
+        report = Certifier(default_catalog()).certify(
+            LeakingStrategy(), Handoff(), ["T_LOOKAHEAD_001"]
+        )
+        self.assertEqual(report.status, "FAIL")
+
 
 if __name__ == "__main__":
     unittest.main()

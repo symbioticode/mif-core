@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from typing import Any
 
 from .catalog import TestCatalog, TestDefinition
@@ -66,6 +67,30 @@ def _adaptive_stability(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     }
 
 
+def _no_lookahead(*, strategy: Any, handoff: Any) -> dict[str, Any]:
+    """Check that a prefix produces the same signals as the full run prefix."""
+    try:
+        stream = handoff.stream
+        midpoint = max(1, len(stream) // 2)
+        prefix_handoff = copy.copy(handoff)
+        prefix_handoff.stream = stream[:midpoint]
+        full_signals = list(strategy.calculate_signals(handoff))
+        prefix_signals = list(strategy.calculate_signals(prefix_handoff))
+        expected = full_signals[:midpoint]
+        passed = prefix_signals == expected
+    except Exception as exc:
+        return {"passed": False, "value": None, "details": {"error": str(exc)}}
+    return {
+        "passed": passed,
+        "value": midpoint,
+        "details": {
+            "prefix_length": midpoint,
+            "full_length": len(full_signals),
+            "reason": "prefix signals are stable" if passed else "future data influence detected",
+        },
+    }
+
+
 def default_catalog() -> TestCatalog:
     """Return the small, offline catalogue shipped with the first release."""
     catalog = TestCatalog()
@@ -77,5 +102,8 @@ def default_catalog() -> TestCatalog:
     ))
     catalog.register(TestDefinition(
         "T_STABILITY_001", "Adaptive positive-return stability", "stability", _adaptive_stability
+    ))
+    catalog.register(TestDefinition(
+        "T_LOOKAHEAD_001", "Prefix causality", "indicator", _no_lookahead
     ))
     return catalog
