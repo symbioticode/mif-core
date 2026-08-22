@@ -12,10 +12,22 @@ class MetricCertifier:
 
     def certify(self, metric: MetricAdapter, handoff: Any) -> dict[str, Any]:
         validate_dal_handoff(handoff)
+        validity_domain = {
+            "asset_scope": handoff.asset_id,
+            "calendar": handoff.calendar,
+            "assembly_hash": handoff.assembly_hash,
+            "dqf_status": handoff.dqf_status,
+        }
         try:
             output = metric.calculate(handoff)
         except Exception as exc:
-            return {"metric_name": metric.metadata.name, "status": "FAIL", "details": {"error": str(exc)}}
+            return {
+                "metric_name": metric.metadata.name,
+                "metric_version": metric.metadata.version,
+                "status": "FAIL",
+                "validity_domain": validity_domain,
+                "details": {"error": str(exc)},
+            }
 
         kind = metric.metadata.output_kind
         if kind in {"series", "signal"}:
@@ -37,11 +49,6 @@ class MetricCertifier:
             "metric_name": metric.metadata.name,
             "metric_version": metric.metadata.version,
             "status": "PASS" if passed else "FAIL",
-            "validity_domain": {
-                "asset_scope": handoff.asset_id,
-                "calendar": handoff.calendar,
-                "assembly_hash": handoff.assembly_hash,
-                "dqf_status": handoff.dqf_status,
-            },
+            "validity_domain": validity_domain,
             "details": details,
         }

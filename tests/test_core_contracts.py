@@ -104,6 +104,17 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(MetricCertifier().certify(BadSeries(), Handoff())["status"], "FAIL")
         self.assertEqual(MetricCertifier().certify(BadScalar(), Handoff())["status"], "FAIL")
 
+    def test_metric_exception_preserves_validity_domain(self):
+        class RaisingMetric(MetricAdapter):
+            metadata = MetricMetadata("raising", "performance", "scalar")
+
+            def calculate(self, handoff):
+                raise RuntimeError("metric failed")
+
+        result = MetricCertifier().certify(RaisingMetric(), Handoff())
+        self.assertEqual(result["status"], "FAIL")
+        self.assertEqual(result["validity_domain"]["asset_scope"], "BTC-USD")
+
     def test_strategy_registry_rejects_duplicates_and_sorts_names(self):
         registry = StrategyRegistry()
         registry.register(ExampleStrategy())
