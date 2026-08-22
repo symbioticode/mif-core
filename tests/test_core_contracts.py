@@ -2,7 +2,7 @@ import unittest
 from dataclasses import dataclass
 import json
 
-from core import Certifier, CriteriaPolicy, MetricAdapter, MetricMetadata, StrategyAdapter, StrategyMetadata, TestCatalog, TestDefinition, default_catalog
+from core import Certifier, CriteriaPolicy, MetricAdapter, MetricMetadata, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog, TestDefinition, default_catalog
 from core.certification.tiers import calculate_tier
 from core.cli import main as cli_main
 from core.integrations.dal import HandoffContractError
@@ -66,6 +66,13 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(ExampleMetric.metadata.output_kind, "series")
         with self.assertRaises(ValueError):
             MetricMetadata("bad", "performance", "unknown")
+
+    def test_strategy_registry_rejects_duplicates_and_sorts_names(self):
+        registry = StrategyRegistry()
+        registry.register(ExampleStrategy())
+        self.assertEqual(registry.names(), ("example",))
+        with self.assertRaises(ValueError):
+            registry.register(ExampleStrategy())
 
     def test_certifier_runs_only_selected_tests(self):
         catalog = TestCatalog()
