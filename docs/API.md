@@ -18,6 +18,7 @@ from core import (
 
 - `StrategyAdapter` describes strategy signal and backtest behavior.
 - `MetricAdapter` describes a metric calculated from one certified handoff.
+- `MetricCertifier` validates the declared metric output shape and finiteness.
 - `StrategyMetadata` and `MetricMetadata` make the subject explicit.
 - `default_catalog()` returns the shipped offline tests.
 - `CriteriaPolicy` makes adaptive thresholds explicit.

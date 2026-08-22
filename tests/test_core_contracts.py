@@ -2,7 +2,7 @@ import unittest
 from dataclasses import dataclass
 import json
 
-from core import Certifier, CriteriaPolicy, MetricAdapter, MetricMetadata, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog, TestDefinition, default_catalog
+from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog, TestDefinition, default_catalog
 from core.certification.tiers import calculate_tier
 from core.cli import main as cli_main
 from core.integrations.dal import HandoffContractError
@@ -66,6 +66,25 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(ExampleMetric.metadata.output_kind, "series")
         with self.assertRaises(ValueError):
             MetricMetadata("bad", "performance", "unknown")
+
+        result = MetricCertifier().certify(ExampleMetric(), Handoff())
+        self.assertEqual(result["status"], "PASS")
+
+    def test_metric_certifier_rejects_wrong_series_length_and_nan_scalar(self):
+        class BadSeries(MetricAdapter):
+            metadata = MetricMetadata("bad-series", "performance", "series")
+
+            def calculate(self, handoff):
+                return [1.0]
+
+        class BadScalar(MetricAdapter):
+            metadata = MetricMetadata("bad-scalar", "performance", "scalar")
+
+            def calculate(self, handoff):
+                return float("nan")
+
+        self.assertEqual(MetricCertifier().certify(BadSeries(), Handoff())["status"], "FAIL")
+        self.assertEqual(MetricCertifier().certify(BadScalar(), Handoff())["status"], "FAIL")
 
     def test_strategy_registry_rejects_duplicates_and_sorts_names(self):
         registry = StrategyRegistry()
