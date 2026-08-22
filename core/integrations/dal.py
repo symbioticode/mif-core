@@ -32,5 +32,6 @@ def validate_dal_handoff(handoff: Any) -> None:
         value = getattr(handoff, name)
         if isinstance(value, bool) or not isinstance(value, Real):
             raise HandoffContractError(f"handoff {name} must be numeric")
-        if not math.isfinite(value) or not 0.0 <= value <= 100.0:
+        normalized = float(value)
+        if not math.isfinite(normalized) or not 0.0 <= normalized <= 100.0:
             raise HandoffContractError(f"handoff {name} must be finite and in [0, 100]")
