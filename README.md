@@ -40,6 +40,7 @@ mif-core demo
 mif-core metric-demo
 mif-core demo --format text
 mif-core metric-demo --format text
+mif-core demo --tests T_HANDOFF_001,T_LOOKAHEAD_001
 ```
 
 An external strategy can implement `StrategyAdapter` and be certified against

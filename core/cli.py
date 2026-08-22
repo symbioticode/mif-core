@@ -46,6 +46,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="mif-core")
     parser.add_argument("command", choices=("catalog", "demo", "metric-demo"))
     parser.add_argument("--format", choices=("json", "text"), default="json")
+    parser.add_argument(
+        "--tests",
+        help="comma-separated test IDs for the strategy demo (default: all)",
+    )
     args = parser.parse_args(argv)
     catalog = default_catalog()
     if args.command == "catalog":
@@ -63,9 +67,15 @@ def main(argv: list[str] | None = None) -> int:
         else:
             print(json.dumps(result, indent=2, sort_keys=True))
         return 0
-    report = Certifier(catalog).certify(
-        _DemoStrategy(), _demo_handoff(), list(catalog.as_dict())
+    test_ids = (
+        [test_id.strip() for test_id in args.tests.split(",") if test_id.strip()]
+        if args.tests
+        else list(catalog.as_dict())
     )
+    try:
+        report = Certifier(catalog).certify(_DemoStrategy(), _demo_handoff(), test_ids)
+    except KeyError as exc:
+        parser.error(f"unknown test ID: {exc.args[0]}")
     if args.format == "text":
         print(report.to_text())
     else:

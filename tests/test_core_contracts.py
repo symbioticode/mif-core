@@ -263,6 +263,13 @@ class CoreContractTests(unittest.TestCase):
         self.assertIn("Strategy: demo", output.getvalue())
         self.assertIn("T_HANDOFF_001 [PASS]", output.getvalue())
 
+    def test_cli_demo_can_select_tests(self):
+        output = StringIO()
+        with redirect_stdout(output):
+            self.assertEqual(cli_main(["demo", "--format", "text", "--tests", "T_SIGNAL_SHAPE_001"]), 0)
+        self.assertIn("T_SIGNAL_SHAPE_001 [PASS]", output.getvalue())
+        self.assertNotIn("T_HANDOFF_001", output.getvalue())
+
     def test_cli_metric_demo_supports_human_readable_output(self):
         output = StringIO()
         with redirect_stdout(output):
