@@ -30,6 +30,10 @@ python -m pytest
 python -m build
 ```
 
+The published distribution is named `metric-integrity-core` on PyPI. The
+import package and command remain `core` and `mif-core` respectively; the
+longer distribution name makes the PyPI project unambiguous.
+
 ```bash
 mif-core catalog
 mif-core demo

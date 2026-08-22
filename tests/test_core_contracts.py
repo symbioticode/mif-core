@@ -2,7 +2,7 @@ import unittest
 from dataclasses import dataclass
 import json
 
-from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, MetricRegistry, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog, TestDefinition, TestResult, __version__, default_catalog
+from core import Certifier, CriteriaPolicy, MetricAdapter, MetricCertifier, MetricMetadata, MetricRegistry, StrategyAdapter, StrategyMetadata, StrategyRegistry, TestCatalog as Catalog, TestDefinition as Definition, TestResult as Result, __version__, default_catalog
 from core.certification.tiers import calculate_tier
 from core.cli import main as cli_main
 from core.integrations.dal import HandoffContractError
@@ -60,10 +60,10 @@ class CoreContractTests(unittest.TestCase):
         self.assertRegex(__version__, r"^\d+\.\d+\.\d+")
 
     def test_test_result_schema_is_versioned(self):
-        result = TestResult("T", "test", "strategy", True, 1, {})
+        result = Result("T", "test", "strategy", True, 1, {})
         self.assertEqual(result.to_dict()["schema_version"], 1)
         with self.assertRaises(ValueError):
-            TestResult("T", "test", "strategy", True, 1, {}, schema_version=2)
+            Result("T", "test", "strategy", True, 1, {}, schema_version=2)
 
     def test_metric_contract_requires_declared_output_kind(self):
         class ExampleMetric(MetricAdapter):
@@ -141,8 +141,8 @@ class CoreContractTests(unittest.TestCase):
             registry.register(ExampleStrategy())
 
     def test_certifier_runs_only_selected_tests(self):
-        catalog = TestCatalog()
-        catalog.register(TestDefinition("T_PASS", "pass", "integrity", lambda **_: {"passed": True}))
+        catalog = Catalog()
+        catalog.register(Definition("T_PASS", "pass", "integrity", lambda **_: {"passed": True}))
         report = Certifier(catalog).certify(ExampleStrategy(), Handoff(), ["T_PASS"])
         self.assertEqual(report.status, "PASS")
         self.assertEqual(report.validity_domain["asset_scope"], "BTC-USD")
@@ -155,13 +155,13 @@ class CoreContractTests(unittest.TestCase):
         self.assertIn("T_PASS [PASS]", report.to_text())
 
     def test_certifier_rejects_empty_protocol(self):
-        catalog = TestCatalog()
+        catalog = Catalog()
         with self.assertRaises(ValueError):
             Certifier(catalog).certify(ExampleStrategy(), Handoff(), [])
 
     def test_certifier_rejects_invalid_dqf_status(self):
-        catalog = TestCatalog()
-        catalog.register(TestDefinition("T_PASS", "pass", "integrity", lambda **_: {"passed": True}))
+        catalog = Catalog()
+        catalog.register(Definition("T_PASS", "pass", "integrity", lambda **_: {"passed": True}))
         handoff = Handoff()
         handoff.dqf_status = "FAIL"
         with self.assertRaises(HandoffContractError):
@@ -184,8 +184,8 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(report.status, "FAIL")
 
     def test_test_exception_becomes_explicit_failure(self):
-        catalog = TestCatalog()
-        catalog.register(TestDefinition("T_RAISE", "raising test", "strategy", lambda **_: 1 / 0))
+        catalog = Catalog()
+        catalog.register(Definition("T_RAISE", "raising test", "strategy", lambda **_: 1 / 0))
         report = Certifier(catalog).certify(ExampleStrategy(), Handoff(), ["T_RAISE"])
         self.assertEqual(report.status, "FAIL")
         self.assertEqual(report.tests_run["T_RAISE"]["details"]["error"], "division by zero")

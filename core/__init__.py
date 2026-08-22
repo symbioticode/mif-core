@@ -7,7 +7,7 @@ from .integrations import validate_dal_handoff
 from .metric import MetricAdapter, MetricCertifier, MetricMetadata, MetricRegistry
 
 try:
-    __version__ = version("mif-core")
+    __version__ = version("metric-integrity-core")
 except PackageNotFoundError:
     __version__ = "0.1.0.dev1"
 
