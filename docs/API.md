@@ -8,8 +8,10 @@ from core import (
     CriteriaPolicy,
     MetricAdapter,
     MetricMetadata,
+    MetricRegistry,
     StrategyAdapter,
     StrategyMetadata,
+    StrategyRegistry,
     default_catalog,
 )
 ```
@@ -35,3 +37,16 @@ report export methods. Metric certification results include the same asset,
 calendar, coverage, DQF status, and assembly hash validity domain. CORE does not
 fetch data; production callers provide a `DALHandoff` from `mif-dal-en`.
 Metric results expose `schema_version=1` for forward-compatible consumers.
+
+## Selection and errors
+
+`Certifier.certify()` requires at least one unique test ID and runs only those
+IDs. Duplicate IDs raise `ValueError`; unknown IDs raise an informative
+`KeyError`. The registries and metric/strategy certifiers reject objects that
+do not implement their declared adapter contracts with `TypeError`.
+
+The CLI exposes the same explicit selection for its strategy demo:
+
+```bash
+mif-core demo --tests T_HANDOFF_001,T_LOOKAHEAD_001
+```
