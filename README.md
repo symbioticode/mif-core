@@ -44,6 +44,7 @@ example; production callers should supply the real `DALHandoff` from
 `examples/certify_metric.py` shows the corresponding metric contract.
 
 See [`docs/API.md`](docs/API.md) for the supported public surface.
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for current limits and next phases.
 
 ## Status
 
