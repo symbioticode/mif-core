@@ -274,6 +274,19 @@ class CoreContractTests(unittest.TestCase):
             len(result["details"]["windows"]), result["details"]["window_count"]
         )
 
+    def test_walk_forward_reports_invalid_returns_explicitly(self):
+        class CorruptStrategy(ExampleStrategy):
+            def backtest(self, handoff):
+                return {"returns": [0.1, float("nan"), "bad", 0.2]}
+
+        report = Certifier(default_catalog()).certify(
+            CorruptStrategy(), Handoff(), ["T_WALK_FORWARD_001"]
+        )
+        result = report.tests_run["T_WALK_FORWARD_001"]
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(result["details"]["reason"], "invalid returns")
+        self.assertEqual(result["details"]["invalid"][0]["index"], 1)
+
     def test_walk_forward_rejects_insufficient_test_sample(self):
         class ShortStrategy(ExampleStrategy):
             def backtest(self, handoff):

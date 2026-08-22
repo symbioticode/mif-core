@@ -95,6 +95,18 @@ def _walk_forward_consistency(*, strategy: Any, handoff: Any, policy: CriteriaPo
         returns = list(strategy.backtest(handoff)["returns"])
     except Exception as exc:
         return {"passed": False, "value": None, "details": {"error": str(exc)}}
+    invalid: list[dict[str, object]] = []
+    for index, value in enumerate(returns):
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            invalid.append({"index": index, "value": repr(value), "reason": "not numeric"})
+        elif not math.isfinite(value):
+            invalid.append({"index": index, "value": repr(value), "reason": "not finite"})
+    if invalid:
+        return {
+            "passed": False,
+            "value": None,
+            "details": {"reason": "invalid returns", "invalid": invalid},
+        }
     test_size = max(1, round(len(returns) * policy.walk_forward_test_fraction))
     if test_size < policy.walk_forward_min_test_observations:
         return {
@@ -116,6 +128,7 @@ def _walk_forward_consistency(*, strategy: Any, handoff: Any, policy: CriteriaPo
             "train_start": start,
             "test_start": test_start,
             "test_observations": len(test_returns),
+            "train_observations": policy.walk_forward_train_observations,
             "positive_rate": positive_rate,
             "passed": positive_rate >= policy.out_of_sample_positive_rate,
         })
