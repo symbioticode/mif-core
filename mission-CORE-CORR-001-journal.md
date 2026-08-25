@@ -131,3 +131,36 @@ Sorties brutes :
 
     .                                                                        [100%]
     ..............................................                           [100%]
+
+## B2 — Sérialisation robuste des détails arbitraires
+
+Test ajouté : `CoreContractTests.test_certification_report_serializes_arbitrary_details_as_repr`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_certification_report_serializes_arbitrary_details_as_repr -q
+
+Sortie brute :
+
+    F                                                                        [100%]
+    =================================== FAILURES ===================================
+    _ CoreContractTests.test_certification_report_serializes_arbitrary_details_as_repr _
+    tests/test_core_contracts.py:365: in test_certification_report_serializes_arbitrary_details_as_repr
+        json.loads(report.to_json())["tests_run"]["T_OPAQUE"]["details"][
+    core/certification/report.py:37: in to_json
+        return json.dumps(self.to_dict(), sort_keys=True)
+    E   TypeError: Object of type OpaqueDetail is not JSON serializable
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_certification_report_serializes_arbitrary_details_as_repr
+
+Correction : les deux rendus utilisent le mécanisme standard `json.dumps(default=repr)` pour dégrader uniquement les objets non sérialisables en texte.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_certification_report_serializes_arbitrary_details_as_repr -q
+    .venv/bin/python -m pytest -q
+
+Sorties brutes :
+
+    .                                                                        [100%]
+    ...............................................                          [100%]

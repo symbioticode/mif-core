@@ -342,6 +342,33 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             CertificationReport("example", [], "PASS", {})  # type: ignore[arg-type]
 
+    def test_certification_report_serializes_arbitrary_details_as_repr(self):
+        class OpaqueDetail:
+            def __repr__(self):
+                return "<opaque-detail>"
+
+        report = CertificationReport(
+            "example",
+            {
+                "T_OPAQUE": {
+                    "test_id": "T_OPAQUE",
+                    "status": "FAIL",
+                    "test_name": "opaque",
+                    "value": None,
+                    "details": {"payload": OpaqueDetail()},
+                }
+            },
+            "FAIL",
+            {},
+        )
+        self.assertEqual(
+            json.loads(report.to_json())["tests_run"]["T_OPAQUE"]["details"][
+                "payload"
+            ],
+            "<opaque-detail>",
+        )
+        self.assertIn('"payload": "<opaque-detail>"', report.to_text())
+
     def test_criteria_policy_is_validated_and_injectable(self):
         with self.assertRaises(ValueError):
             CriteriaPolicy(default_positive_rate=1.1)

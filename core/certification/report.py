@@ -34,7 +34,7 @@ class CertificationReport:
 
     def to_json(self) -> str:
         """Serialize the report using the stable dictionary representation."""
-        return json.dumps(self.to_dict(), sort_keys=True)
+        return json.dumps(self.to_dict(), default=repr, sort_keys=True)
 
     def to_text(self) -> str:
         """Render a compact human-readable report without losing test detail."""
@@ -55,6 +55,8 @@ class CertificationReport:
             if result.get("threshold") is not None:
                 line += f" threshold={result['threshold']}"
             if result.get("details"):
-                line += " details=" + json.dumps(result["details"], sort_keys=True)
+                line += " details=" + json.dumps(
+                    result["details"], default=repr, sort_keys=True
+                )
             lines.append(line)
         return "\n".join(lines)
