@@ -41,6 +41,16 @@ class Certifier:
                     "value": None,
                     "details": {"error": str(exc)},
                 }
+            if not isinstance(result, dict):
+                result = {
+                    "passed": False,
+                    "value": None,
+                    "details": {
+                        "error": (
+                            f"test returned {type(result).__name__}, expected dict"
+                        )
+                    },
+                }
             normalized = TestResult(
                 test_id=test_id,
                 test_name=definition.name,

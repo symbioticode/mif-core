@@ -313,6 +313,18 @@ class CoreContractTests(unittest.TestCase):
             report.tests_run["T_RAISE"]["details"]["error"], "division by zero"
         )
 
+    def test_non_mapping_test_result_becomes_explicit_failure(self):
+        catalog = Catalog()
+        catalog.register(
+            Definition("T_BAD_RESULT", "bad result", "strategy", lambda **_: 42)
+        )
+        report = Certifier(catalog).certify(
+            ExampleStrategy(), Handoff(), ["T_BAD_RESULT"]
+        )
+        result = report.tests_run["T_BAD_RESULT"]
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(result["details"]["error"], "test returned int, expected dict")
+
     def test_tiers_are_deterministic_and_empty_is_conservative(self):
         self.assertEqual(calculate_tier({}), "C")
         self.assertEqual(

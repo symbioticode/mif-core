@@ -97,3 +97,37 @@ Sorties brutes :
 
     .                                                                        [100%]
     .............................................                            [100%]
+
+## B1 — Résultat de test non dictionnaire
+
+Test ajouté : `CoreContractTests.test_non_mapping_test_result_becomes_explicit_failure`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_non_mapping_test_result_becomes_explicit_failure -q
+
+Sortie brute :
+
+    F                                                                        [100%]
+    =================================== FAILURES ===================================
+    ___ CoreContractTests.test_non_mapping_test_result_becomes_explicit_failure ____
+    tests/test_core_contracts.py:321: in test_non_mapping_test_result_becomes_explicit_failure
+        report = Certifier(catalog).certify(
+    core/certification/certifier.py:48: in certify
+        passed=result.get("passed", False) is True,
+               ^^^^^^^^^^
+    E   AttributeError: 'int' object has no attribute 'get'
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_non_mapping_test_result_becomes_explicit_failure
+
+Correction : tout retour non dictionnaire est normalisé en résultat FAIL et son type réel est conservé dans le diagnostic.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_non_mapping_test_result_becomes_explicit_failure -q
+    .venv/bin/python -m pytest -q
+
+Sorties brutes :
+
+    .                                                                        [100%]
+    ..............................................                           [100%]
