@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Standardized public validation errors: invalid field types raise `TypeError`,
+  while invalid values of the expected type raise `ValueError`.
 - Named the PyPI distribution `mif-foundation`; the import package remains
   `core` and the CLI remains `mif-core`.
 - Added configurable rolling walk-forward windows with explicit train/test

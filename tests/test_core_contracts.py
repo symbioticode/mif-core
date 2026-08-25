@@ -75,12 +75,14 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             StrategyMetadata("bad", "unknown", "1D", 1, 1)
         with self.assertRaises(TypeError):
+            StrategyMetadata(1, "medium", "1D", 1, 1)  # type: ignore[arg-type]
+        with self.assertRaises(TypeError):
             StrategyMetadata("bad", "medium", "1D", True, 1)
         with self.assertRaises(TypeError):
             StrategyMetadata("bad", "medium", "1D", 1, 1, ["crypto"])  # type: ignore[arg-type]
         with self.assertRaises(ValueError):
             MetricMetadata("", "performance", "scalar")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             MetricMetadata("name", "performance", "scalar", 1)  # type: ignore[arg-type]
 
     def test_package_version_is_exposed(self):
@@ -372,9 +374,9 @@ class CoreContractTests(unittest.TestCase):
     def test_criteria_policy_is_validated_and_injectable(self):
         with self.assertRaises(ValueError):
             CriteriaPolicy(default_positive_rate=1.1)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             CriteriaPolicy(default_positive_rate=True)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             CriteriaPolicy(walk_forward_step=True)
         with self.assertRaises(ValueError):
             CriteriaPolicy(walk_forward_train_observations=0)

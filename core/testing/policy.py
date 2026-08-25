@@ -23,19 +23,19 @@ class CriteriaPolicy:
         ):
             value = getattr(self, name)
             if isinstance(value, bool) or not isinstance(value, (int, float)):
-                raise ValueError(f"{name} must be numeric")
+                raise TypeError(f"{name} must be numeric")
             if not 0.0 <= value <= 1.0:
                 raise ValueError(f"{name} must be in [0, 1]")
         if isinstance(self.walk_forward_test_fraction, bool) or not isinstance(
             self.walk_forward_test_fraction, (int, float)
         ):
-            raise ValueError("walk_forward_test_fraction must be numeric")
+            raise TypeError("walk_forward_test_fraction must be numeric")
         if not 0.0 < self.walk_forward_test_fraction < 1.0:
             raise ValueError("walk_forward_test_fraction must be between 0 and 1")
         if isinstance(self.walk_forward_min_test_observations, bool) or not isinstance(
             self.walk_forward_min_test_observations, int
         ):
-            raise ValueError("walk_forward_min_test_observations must be an integer")
+            raise TypeError("walk_forward_min_test_observations must be an integer")
         if self.walk_forward_min_test_observations < 1:
             raise ValueError("walk_forward_min_test_observations must be >= 1")
         if (
@@ -44,7 +44,7 @@ class CriteriaPolicy:
             or isinstance(self.walk_forward_step, bool)
             or not isinstance(self.walk_forward_step, int)
         ):
-            raise ValueError("walk-forward observations and step must be integers")
+            raise TypeError("walk-forward observations and step must be integers")
         if self.walk_forward_train_observations < 1 or self.walk_forward_step < 1:
             raise ValueError("walk-forward train observations and step must be >= 1")
 

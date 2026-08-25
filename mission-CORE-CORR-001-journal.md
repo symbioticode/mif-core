@@ -164,3 +164,41 @@ Sorties brutes :
 
     .                                                                        [100%]
     ...............................................                          [100%]
+
+## C1 — Types d'exception des métadonnées et politiques
+
+Contrat testé : mauvais type → `TypeError`; valeur du bon type mais invalide → `ValueError`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_metadata_rejects_unknown_frequency tests/test_core_contracts.py::CoreContractTests::test_criteria_policy_is_validated_and_injectable -q
+
+Sortie brute :
+
+    FF                                                                       [100%]
+    =================================== FAILURES ===================================
+    __________ CoreContractTests.test_metadata_rejects_unknown_frequency ___________
+    core/strategy/metadata.py:21: in __post_init__
+        raise ValueError("strategy identity fields must be non-empty strings")
+    E   ValueError: strategy identity fields must be non-empty strings
+    ______ CoreContractTests.test_criteria_policy_is_validated_and_injectable ______
+    core/testing/policy.py:26: in __post_init__
+        raise ValueError(f"{name} must be numeric")
+    E   ValueError: default_positive_rate must be numeric
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_metadata_rejects_unknown_frequency
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_criteria_policy_is_validated_and_injectable
+
+Correction : les validations séparent désormais le type de la valeur dans les trois contrats publics; l'évolution est inscrite au changelog.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_metadata_rejects_unknown_frequency tests/test_core_contracts.py::CoreContractTests::test_criteria_policy_is_validated_and_injectable -q
+    .venv/bin/python -m pytest -q
+    .venv/bin/python -m mypy core tests
+
+Sorties brutes :
+
+    ..                                                                       [100%]
+    ...............................................                          [100%]
+    Success: no issues found in 25 source files
