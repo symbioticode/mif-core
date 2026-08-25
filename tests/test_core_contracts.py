@@ -1,9 +1,10 @@
-import unittest
-from dataclasses import dataclass
 import json
+import unittest
 from contextlib import redirect_stdout
+from dataclasses import dataclass
 from fractions import Fraction
 from io import StringIO
+from typing import ClassVar
 
 from core import (
     Certifier,
@@ -15,20 +16,26 @@ from core import (
     StrategyAdapter,
     StrategyMetadata,
     StrategyRegistry,
-    TestCatalog as Catalog,
-    TestDefinition as Definition,
-    TestResult as Result,
     __version__,
     default_catalog,
 )
-from core.certification.tiers import calculate_tier
+from core import (
+    TestCatalog as Catalog,
+)
+from core import (
+    TestDefinition as Definition,
+)
+from core import (
+    TestResult as Result,
+)
 from core.certification.report import CertificationReport
+from core.certification.tiers import calculate_tier
 from core.cli import main as cli_main
 from core.integrations.dal import HandoffContractError
 
 
 class Handoff:
-    stream = [1, 2, 3]
+    stream: ClassVar[list[int]] = [1, 2, 3]
     asset_id = "BTC-USD"
     calendar = "CRYPTO_247"
     assembly_hash = "a" * 64
@@ -364,9 +371,7 @@ class CoreContractTests(unittest.TestCase):
             {},
         )
         self.assertEqual(
-            json.loads(report.to_json())["tests_run"]["T_OPAQUE"]["details"][
-                "payload"
-            ],
+            json.loads(report.to_json())["tests_run"]["T_OPAQUE"]["details"]["payload"],
             "<opaque-detail>",
         )
         self.assertIn('"payload": "<opaque-detail>"', report.to_text())

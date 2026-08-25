@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Tuple
 
 
 @dataclass(frozen=True)
@@ -11,7 +10,7 @@ class StrategyMetadata:
     optimal_timeframe: str
     min_trades_per_year: int
     typical_holding_days: int
-    asset_classes: Tuple[str, ...] = field(default_factory=tuple)
+    asset_classes: tuple[str, ...] = field(default_factory=tuple)
 
     def __post_init__(self) -> None:
         if not all(

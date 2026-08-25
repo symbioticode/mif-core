@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import copy
-from dataclasses import is_dataclass, replace
 import math
+from dataclasses import is_dataclass, replace
 from numbers import Real
 from typing import Any, cast
 
@@ -29,7 +29,8 @@ def _signals_shape(*, strategy: Any, handoff: Any) -> dict[str, Any]:
         signals = strategy.calculate_signals(handoff)
         observations = len(handoff.stream)
         signal_count = len(signals)
-    except Exception as exc:  # the result must explain strategy failures
+    # Strategy adapters are untrusted; selected tests must explain every failure.
+    except Exception as exc:  # noqa: BLE001
         return {"passed": False, "value": None, "details": {"error": str(exc)}}
     passed = signal_count == observations
     return {
@@ -55,7 +56,8 @@ def _adaptive_stability(
     try:
         result = strategy.backtest(handoff)
         returns = list(result["returns"])
-    except Exception as exc:
+    # Strategy adapters are untrusted; selected tests must explain every failure.
+    except Exception as exc:  # noqa: BLE001
         return {"passed": False, "value": None, "details": {"error": str(exc)}}
     if not returns:
         return {"passed": False, "value": 0.0, "details": {"reason": "no returns"}}
@@ -93,7 +95,8 @@ def _return_integrity(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     """Reject missing, non-numeric, NaN, or infinite backtest returns."""
     try:
         returns = list(strategy.backtest(handoff)["returns"])
-    except Exception as exc:
+    # Strategy adapters are untrusted; selected tests must explain every failure.
+    except Exception as exc:  # noqa: BLE001
         return {"passed": False, "value": None, "details": {"error": str(exc)}}
     invalid: list[dict[str, object]] = []
     for index, value in enumerate(returns):
@@ -118,7 +121,8 @@ def _walk_forward_consistency(
     """Check positive-return rates across policy-defined rolling windows."""
     try:
         returns = list(strategy.backtest(handoff)["returns"])
-    except Exception as exc:
+    # Strategy adapters are untrusted; selected tests must explain every failure.
+    except Exception as exc:  # noqa: BLE001
         return {"passed": False, "value": None, "details": {"error": str(exc)}}
     invalid: list[dict[str, object]] = []
     for index, value in enumerate(returns):
@@ -207,7 +211,8 @@ def _no_lookahead(*, strategy: Any, handoff: Any) -> dict[str, Any]:
         prefix_signals = list(strategy.calculate_signals(prefix_handoff))
         expected = full_signals[:midpoint]
         passed = prefix_signals == expected
-    except Exception as exc:
+    # Strategy adapters are untrusted; selected tests must explain every failure.
+    except Exception as exc:  # noqa: BLE001
         return {"passed": False, "value": None, "details": {"error": str(exc)}}
     return {
         "passed": passed,

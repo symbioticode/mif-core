@@ -1,5 +1,6 @@
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Dict
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -7,7 +8,7 @@ class TestDefinition:
     id: str
     name: str
     category: str
-    execute: Callable[..., Dict[str, Any]]
+    execute: Callable[..., dict[str, Any]]
 
     def __post_init__(self) -> None:
         if not all(
@@ -36,5 +37,5 @@ class TestCatalog:
         except KeyError:
             raise KeyError(f"unknown test ID: {test_id}") from None
 
-    def as_dict(self) -> Dict[str, TestDefinition]:
+    def as_dict(self) -> dict[str, TestDefinition]:
         return dict(self._tests)

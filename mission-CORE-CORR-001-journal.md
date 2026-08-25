@@ -32,6 +32,35 @@ Sorties brutes significatives :
     [*] 20 fixable with the `--fix` option.
     Success: no issues found in 25 source files
 
+## C2 — Ruff comme barrière CI
+
+État avant correction (commande baseline) :
+
+    .venv/bin/python -m ruff check core tests examples
+
+Sortie brute synthétique de Ruff :
+
+    Found 35 errors.
+    [*] 20 fixable with the `--fix` option.
+
+La CI exécute désormais `ruff check`; les familles `E4`, `E7`, `E9`, `F`, `I`, `UP`, `RUF`, `BLE` et `TRY` sont sélectionnées explicitement.
+
+Précision : seules les règles auditables utiles de ces deux dernières familles sont activées (`BLE001` et `TRY004`), afin de corriger les 35 constats sans imposer une refonte hors périmètre. Les captures `Exception` sont conservées aux frontières d'extension, commentées et annotées : leur contrat exige de convertir toute défaillance d'un adaptateur en preuve FAIL déterministe.
+
+Commandes après correction :
+
+    .venv/bin/python -m ruff check core tests examples
+    .venv/bin/python -m ruff format --check core tests examples
+    .venv/bin/python -m pytest -q
+    .venv/bin/python -m mypy core tests
+
+Sorties brutes :
+
+    All checks passed!
+    27 files already formatted
+    ...............................................                          [100%]
+    Success: no issues found in 25 source files
+
 Note : cet environnement préexistant utilise Python 3.13.5, hors de la plage déclarée `>=3.11,<3.13`. C3 vérifiera donc également une installation propre avec un interpréteur pris en charge.
 
 ## A1 — Échantillon insuffisant pour le contrôle de look-ahead
