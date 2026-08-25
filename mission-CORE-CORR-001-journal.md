@@ -140,6 +140,20 @@ Constat avant correction :
 
 Correction : les éléments historiques sont rattachés à 0.1.0; seules les corrections post-tag restent sous `Unreleased`. La roadmap indique la publication de 0.1.0 et la checklist reproduit les contrôles CI dans deux environnements propres.
 
+## D3 — Nom canonique de DAL
+
+Commande avant correction :
+
+    rg -n 'mif-dal-en' . --glob '!mission-CORE-CORR-001-journal.md'
+
+Sortie brute :
+
+    ./README.md:58:`mif-dal-en`.
+    ./docs/ARCHITECTURE.md:17:The input boundary is one certified `DALHandoff` from `mif-dal-en`. CORE does
+    ./docs/API.md:38:fetch data; production callers provide a `DALHandoff` from `mif-dal-en`.
+
+Correction : les trois occurrences utilisent maintenant le nom canonique `mif-dal`.
+
 Note : cet environnement préexistant utilise Python 3.13.5, hors de la plage déclarée `>=3.11,<3.13`. C3 vérifiera donc également une installation propre avec un interpréteur pris en charge.
 
 ## A1 — Échantillon insuffisant pour le contrôle de look-ahead

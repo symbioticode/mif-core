@@ -55,7 +55,7 @@ mif-core demo --tests T_HANDOFF_001,T_LOOKAHEAD_001
 An external strategy can implement `StrategyAdapter` and be certified against
 an explicit list of tests. See `examples/certify_strategy.py` for an offline
 example; production callers should supply the real `DALHandoff` from
-`mif-dal-en`.
+`mif-dal`.
 
 `examples/certify_metric.py` shows the corresponding metric contract.
 

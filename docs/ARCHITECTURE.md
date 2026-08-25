@@ -14,7 +14,7 @@ scope small and deterministic.
 8. `Certifier` executes only the tests named by the caller.
 9. `CertificationReport` records status and validity domain.
 
-The input boundary is one certified `DALHandoff` from `mif-dal-en`. CORE does
+The input boundary is one certified `DALHandoff` from `mif-dal`. CORE does
 not fetch market data, repair data, or silently replace a failed DQF decision.
 
 ## Shipped offline catalogue
