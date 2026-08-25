@@ -27,7 +27,7 @@ jobs:
       - name: Run tests
         run: python -m pytest --cov=core --cov-report=term-missing --cov-fail-under=90
       - name: Run type checks
-        run: python -m mypy core tests
+        run: python -m mypy core tests examples
       - name: Run lint checks
         run: python -m ruff check core tests examples
       - name: Check formatting

@@ -45,3 +45,13 @@ inject a policy for an experiment without modifying test code.
 These are deliberately small contracts, not a claim that a strategy is
 profitable. Future tests can extend the same atomic interface without changing
 the existing contracts.
+
+## Type-checking boundary
+
+Mypy uses gradual rather than strict mode for the 0.1 API. Strategy, metric,
+and DAL adapters intentionally receive third-party runtime objects while the
+stable structural protocols are still being defined. `check_untyped_defs`
+still checks function bodies, and CI covers `core`, `tests`, and `examples`.
+Strict mode is a later contract migration: enabling it now would add annotations
+without first resolving whether those boundaries should remain dynamic or
+become typed protocols.

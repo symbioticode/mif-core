@@ -154,6 +154,78 @@ Sortie brute :
 
 Correction : les trois occurrences utilisent maintenant le nom canonique `mif-dal`.
 
+Vérification après correction :
+
+    PASS: no mif-dal-en occurrence remains
+
+## D4 — Périmètre mypy et exemples
+
+Commandes avant correction :
+
+    .venv/bin/python -m mypy examples
+    .venv/bin/python -m mypy --strict core tests examples
+
+Sorties brutes :
+
+    Success: no issues found in 2 source files
+    Found 88 errors in 5 files (checked 27 source files)
+
+Décision : conserver `strict = false` pour l'API 0.1, dont les frontières d'adaptateurs acceptent encore des objets tiers dynamiques. `check_untyped_defs = true` vérifie néanmoins leurs corps. La CI et la checklist de publication couvrent désormais explicitement `core tests examples`; cette limite est documentée dans l'architecture.
+
+Le contrôle renforcé a exposé cinq tests négatifs qui transmettent volontairement des types invalides. Ils portent maintenant des suppressions `arg-type` locales. Il a aussi permis de rétablir le test AQI booléen dans son scénario d'origine, séparé du test de flux vide.
+
+Commandes après correction :
+
+    .venv/bin/python -m mypy core tests examples
+    .venv/bin/python -m ruff check core tests examples
+    .venv/bin/python -m pytest --cov=core --cov-report=term-missing --cov-fail-under=90
+
+Sorties brutes :
+
+    Success: no issues found in 27 source files
+    All checks passed!
+    49 passed in 0.78s
+    Required test coverage of 90% reached. Total coverage: 93.15%
+
+## Recette finale
+
+Recette rejouée avec l'environnement propre Python 3.12.14 créé pour C3 :
+
+    /tmp/mif-core-c3.ID5c7T/bin/python -m pytest --cov=core --cov-report=term-missing --cov-fail-under=90
+    /tmp/mif-core-c3.ID5c7T/bin/python -m ruff check core tests examples
+    /tmp/mif-core-c3.ID5c7T/bin/python -m ruff format --check core tests examples
+    /tmp/mif-core-c3.ID5c7T/bin/python -m mypy core tests examples
+    /tmp/mif-core-c3.ID5c7T/bin/python -m build
+
+Sorties brutes significatives :
+
+    48 passed, 1 skipped in 0.81s
+    Required test coverage of 90% reached. Total coverage: 93.15%
+    All checks passed!
+    27 files already formatted
+    Success: no issues found in 27 source files
+    Successfully built mif_foundation-0.1.0.tar.gz and mif_foundation-0.1.0-py3-none-any.whl
+
+Le skip d'intégration dans ce venv est propre à l'hôte NixOS : la wheel NumPy téléchargée ne résout pas `libz.so.1`, puis `libstdc++.so.6`, sans enveloppe Nix. Le même test canonique passe dans le venv préexistant (`49 passed`) et la CI Ubuntu vérifie explicitement l'import `DALHandoff` sous Python 3.11 et 3.12. Ce constat d'environnement ne masque aucun échec du code CORE.
+
+## E1 — Nommage public
+
+État : `BLOCKED_BY_HUMAN_DECISION` conformément à la mission. Aucun renommage n'a été effectué. La décision reste à prendre entre le dépôt/CLI `mif-core`, la distribution `mif-foundation` et le package importable `core`.
+
+## Séquence des commits
+
+    fix(A1): reject undersized lookahead samples
+    fix(A2): reject empty DAL streams
+    fix(B1): normalize invalid test results
+    fix(B2): serialize opaque report details safely
+    fix(C1): align validation exception contracts
+    chore(C2): enforce Ruff lint in CI
+    build(C3): include build frontend in dev extra
+    feat(D1): report stability sign counts
+    docs(D2): reconcile release documentation
+    docs(D3): use canonical mif-dal name
+    ci(D4): define gradual typing boundary
+
 Note : cet environnement préexistant utilise Python 3.13.5, hors de la plage déclarée `>=3.11,<3.13`. C3 vérifiera donc également une installation propre avec un interpréteur pris en charge.
 
 ## A1 — Échantillon insuffisant pour le contrôle de look-ahead

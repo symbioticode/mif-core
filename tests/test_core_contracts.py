@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from fractions import Fraction
 from io import StringIO
 from pathlib import Path
-from typing import ClassVar
 
 from core import (
     Certifier,
@@ -37,7 +36,9 @@ from core.integrations.dal import HandoffContractError
 
 
 class Handoff:
-    stream: ClassVar[list[int]] = [1, 2, 3]
+    def __init__(self):
+        self.stream = [1, 2, 3]
+
     asset_id = "BTC-USD"
     calendar = "CRYPTO_247"
     assembly_hash = "a" * 64
@@ -113,7 +114,7 @@ class CoreContractTests(unittest.TestCase):
         result = Result("T", "test", "strategy", True, 1, {})
         self.assertEqual(result.to_dict()["schema_version"], 1)
         with self.assertRaises(TypeError):
-            Result("T", "test", "strategy", 1, 1, {})
+            Result("T", "test", "strategy", 1, 1, {})  # type: ignore[arg-type]
         with self.assertRaises(TypeError):
             Result(
                 "T",
@@ -121,8 +122,8 @@ class CoreContractTests(unittest.TestCase):
                 "strategy",
                 True,
                 1,
-                [],
-            )  # type: ignore[arg-type]
+                [],  # type: ignore[arg-type]
+            )
         with self.assertRaises(TypeError):
             Result("T", "test", "strategy", True, 1, {}, schema_version=True)
         with self.assertRaises(ValueError):
@@ -295,16 +296,16 @@ class CoreContractTests(unittest.TestCase):
             Certifier(default_catalog()).certify(
                 ExampleStrategy(), handoff, ["T_HANDOFF_001"]
             )
+        handoff.aqi = True
+        with self.assertRaises(HandoffContractError):
+            Certifier(default_catalog()).certify(
+                ExampleStrategy(), handoff, ["T_HANDOFF_001"]
+            )
 
     def test_dal_boundary_rejects_empty_stream(self):
         handoff = Handoff()
         handoff.stream = []
         with self.assertRaisesRegex(HandoffContractError, "stream must not be empty"):
-            Certifier(default_catalog()).certify(
-                ExampleStrategy(), handoff, ["T_HANDOFF_001"]
-            )
-        handoff.aqi = True
-        with self.assertRaises(HandoffContractError):
             Certifier(default_catalog()).certify(
                 ExampleStrategy(), handoff, ["T_HANDOFF_001"]
             )
@@ -328,7 +329,12 @@ class CoreContractTests(unittest.TestCase):
     def test_test_exception_becomes_explicit_failure(self):
         catalog = Catalog()
         catalog.register(
-            Definition("T_RAISE", "raising test", "strategy", lambda **_: 1 / 0)
+            Definition(
+                "T_RAISE",
+                "raising test",
+                "strategy",
+                lambda **_: 1 / 0,  # type: ignore[arg-type]
+            )
         )
         report = Certifier(catalog).certify(ExampleStrategy(), Handoff(), ["T_RAISE"])
         self.assertEqual(report.status, "FAIL")
@@ -339,7 +345,12 @@ class CoreContractTests(unittest.TestCase):
     def test_non_mapping_test_result_becomes_explicit_failure(self):
         catalog = Catalog()
         catalog.register(
-            Definition("T_BAD_RESULT", "bad result", "strategy", lambda **_: 42)
+            Definition(
+                "T_BAD_RESULT",
+                "bad result",
+                "strategy",
+                lambda **_: 42,  # type: ignore[arg-type]
+            )
         )
         report = Certifier(catalog).certify(
             ExampleStrategy(), Handoff(), ["T_BAD_RESULT"]
