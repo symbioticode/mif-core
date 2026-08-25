@@ -502,6 +502,15 @@ class CoreContractTests(unittest.TestCase):
         )
         self.assertEqual(report.status, "PASS")
 
+    def test_lookahead_rejects_insufficient_sample(self):
+        report = Certifier(default_catalog()).certify(
+            ExampleStrategy(), FrozenHandoff([1]), ["T_LOOKAHEAD_001"]
+        )
+        result = report.tests_run["T_LOOKAHEAD_001"]
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(result["details"]["reason"], "insufficient sample")
+        self.assertEqual(result["details"]["observations"], 1)
+
     def test_lookahead_test_rejects_future_dependent_strategy(self):
         class LeakingStrategy(ExampleStrategy):
             def calculate_signals(self, handoff):

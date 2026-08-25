@@ -187,6 +187,16 @@ def _no_lookahead(*, strategy: Any, handoff: Any) -> dict[str, Any]:
     """Check that a prefix produces the same signals as the full run prefix."""
     try:
         stream = handoff.stream
+        if len(stream) < 2:
+            return {
+                "passed": False,
+                "value": len(stream),
+                "details": {
+                    "reason": "insufficient sample",
+                    "observations": len(stream),
+                    "minimum": 2,
+                },
+            }
         midpoint = max(1, len(stream) // 2)
         if is_dataclass(handoff):
             prefix_handoff = replace(cast(Any, handoff), stream=stream[:midpoint])
