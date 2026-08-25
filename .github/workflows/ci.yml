@@ -34,7 +34,7 @@ jobs:
         run: python -m ruff format --check core tests examples
       - name: Build distributions
         if: matrix.python-version == '3.12'
-        run: python -m pip install build && python -m build
+        run: python -m build
       - name: Verify distribution metadata
         if: matrix.python-version == '3.12'
         run: |

@@ -1,9 +1,11 @@
 import json
+import tomllib
 import unittest
 from contextlib import redirect_stdout
 from dataclasses import dataclass
 from fractions import Fraction
 from io import StringIO
+from pathlib import Path
 from typing import ClassVar
 
 from core import (
@@ -78,6 +80,18 @@ class ExampleStrategy(StrategyAdapter):
 
 
 class CoreContractTests(unittest.TestCase):
+    def test_development_extra_includes_build_frontend(self):
+        configuration = tomllib.loads(Path("pyproject.toml").read_text())
+        development_dependencies = configuration["project"]["optional-dependencies"][
+            "dev"
+        ]
+        self.assertTrue(
+            any(
+                dependency.split(">=", 1)[0] == "build"
+                for dependency in development_dependencies
+            )
+        )
+
     def test_metadata_rejects_unknown_frequency(self):
         with self.assertRaises(ValueError):
             StrategyMetadata("bad", "unknown", "1D", 1, 1)

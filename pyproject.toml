@@ -20,7 +20,13 @@ classifiers = [
 dependencies = ["mif-dal>=0.1.0,<1.0.0"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0.0", "pytest-cov>=5.0.0", "mypy>=1.9.0", "ruff>=0.4.0"]
+dev = [
+    "build>=1.2.0",
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "mypy>=1.9.0",
+    "ruff>=0.4.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/symbioticode/mif-core"

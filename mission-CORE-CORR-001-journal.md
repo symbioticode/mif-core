@@ -61,6 +61,43 @@ Sorties brutes :
     ...............................................                          [100%]
     Success: no issues found in 25 source files
 
+## C3 — Frontend de build dans les dépendances de développement
+
+Test ajouté : `CoreContractTests.test_development_extra_includes_build_frontend`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_development_extra_includes_build_frontend -q
+
+Sortie brute :
+
+    F                                                                        [100%]
+    =================================== FAILURES ===================================
+    _______ CoreContractTests.test_development_extra_includes_build_frontend _______
+    tests/test_core_contracts.py:88: in test_development_extra_includes_build_frontend
+        self.assertTrue(
+    E   AssertionError: False is not true
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_development_extra_includes_build_frontend
+
+Correction : `build>=1.2.0` appartient maintenant à l'extra `dev`; la CI n'effectue plus d'installation ad hoc avant `python -m build`.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_development_extra_includes_build_frontend -q
+    c3_env_dir=$(mktemp -d -t mif-core-c3.XXXXXX)
+    uv venv --python 3.12 --seed "$c3_env_dir"
+    "$c3_env_dir/bin/python" -m pip install -e '.[dev]'
+    "$c3_env_dir/bin/python" -m build
+
+Sorties brutes significatives :
+
+    .                                                                        [100%]
+    C3_ENV=/tmp/mif-core-c3.ID5c7T
+    Using CPython 3.12.14 interpreter at: /run/current-system/sw/bin/python3.12
+    Successfully installed ... build-1.5.0 ... mif-foundation-0.1.0 ...
+    Successfully built mif_foundation-0.1.0.tar.gz and mif_foundation-0.1.0-py3-none-any.whl
+
 Note : cet environnement préexistant utilise Python 3.13.5, hors de la plage déclarée `>=3.11,<3.13`. C3 vérifiera donc également une installation propre avec un interpréteur pris en charge.
 
 ## A1 — Échantillon insuffisant pour le contrôle de look-ahead
