@@ -451,6 +451,21 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(report.status, "PASS")
         self.assertEqual(report.tests_run["T_STABILITY_001"]["threshold"], 0.50)
 
+    def test_stability_reports_zero_and_negative_observations(self):
+        class MixedSignStrategy(ExampleStrategy):
+            def backtest(self, handoff):
+                return {"returns": [0.1, 0.0, -0.1, 0.0]}
+
+        report = Certifier(default_catalog()).certify(
+            MixedSignStrategy(), Handoff(), ["T_STABILITY_001"]
+        )
+        result = report.tests_run["T_STABILITY_001"]
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(result["value"], 0.25)
+        self.assertEqual(result["details"]["positive_observations"], 1)
+        self.assertEqual(result["details"]["zero_observations"], 2)
+        self.assertEqual(result["details"]["negative_observations"], 1)
+
     def test_return_integrity_accepts_finite_numeric_returns(self):
         report = Certifier(default_catalog()).certify(
             ExampleStrategy(), Handoff(), ["T_RETURN_INTEGRITY_001"]

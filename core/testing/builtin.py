@@ -85,6 +85,8 @@ def _adaptive_stability(
         "threshold": threshold,
         "details": {
             "positive_observations": sum(value > 0 for value in returns),
+            "zero_observations": sum(value == 0 for value in returns),
+            "negative_observations": sum(value < 0 for value in returns),
             "observations": len(returns),
             "frequency": strategy.metadata.frequency,
         },

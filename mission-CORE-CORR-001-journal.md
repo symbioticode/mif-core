@@ -98,6 +98,38 @@ Sorties brutes significatives :
     Successfully installed ... build-1.5.0 ... mif-foundation-0.1.0 ...
     Successfully built mif_foundation-0.1.0.tar.gz and mif_foundation-0.1.0-py3-none-any.whl
 
+## D1 — Comptage des rendements nuls et négatifs
+
+Test ajouté : `CoreContractTests.test_stability_reports_zero_and_negative_observations`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_stability_reports_zero_and_negative_observations -q
+
+Sortie brute :
+
+    F                                                                        [100%]
+    =================================== FAILURES ===================================
+    ___ CoreContractTests.test_stability_reports_zero_and_negative_observations ____
+    tests/test_core_contracts.py:466: in test_stability_reports_zero_and_negative_observations
+        self.assertEqual(result["details"]["zero_observations"], 2)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    E   KeyError: 'zero_observations'
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_stability_reports_zero_and_negative_observations
+
+Correction : les détails exposent les trois partitions positive, nulle et négative; la formule du taux et le seuil restent inchangés.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_stability_reports_zero_and_negative_observations -q
+    .venv/bin/python -m pytest -q
+
+Sorties brutes :
+
+    .                                                                        [100%]
+    .................................................                        [100%]
+
 Note : cet environnement préexistant utilise Python 3.13.5, hors de la plage déclarée `>=3.11,<3.13`. C3 vérifiera donc également une installation propre avec un interpréteur pris en charge.
 
 ## A1 — Échantillon insuffisant pour le contrôle de look-ahead
