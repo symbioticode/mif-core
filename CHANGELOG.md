@@ -4,6 +4,11 @@
 
 - Standardized public validation errors: invalid field types raise `TypeError`,
   while invalid values of the expected type raise `ValueError`.
+- Added explicit positive, zero, and negative observation counts to stability
+  diagnostics without changing the verdict calculation.
+
+## 0.1.0
+
 - Named the PyPI distribution `mif-foundation`; the import package remains
   `core` and the CLI remains `mif-core`.
 - Added configurable rolling walk-forward windows with explicit train/test
@@ -20,8 +25,6 @@
 - Added Python 3.13, canonical DAL import, mypy, and artifact metadata checks
   to CI.
 - Updated the protected GitHub Release workflow and PyPI publishing guide.
-
-## 0.1.0
 
 - Declared the supported Python range as 3.11–3.12, matching the current
   `mif-dal` and NumPy compatibility boundary.

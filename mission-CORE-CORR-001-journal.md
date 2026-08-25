@@ -130,6 +130,16 @@ Sorties brutes :
     .                                                                        [100%]
     .................................................                        [100%]
 
+## D2 — Cohérence de la documentation de release
+
+Constat avant correction :
+
+    CHANGELOG.md: les fonctions déjà livrées par v0.1.0 figuraient sous Unreleased
+    docs/ROADMAP.md: 5. Define a stable `0.1` API and only then prepare the first PyPI release.
+    docs/PUBLISHING.md: la checklist omettait couverture, format Ruff, mypy et environnement propre
+
+Correction : les éléments historiques sont rattachés à 0.1.0; seules les corrections post-tag restent sous `Unreleased`. La roadmap indique la publication de 0.1.0 et la checklist reproduit les contrôles CI dans deux environnements propres.
+
 Note : cet environnement préexistant utilise Python 3.13.5, hors de la plage déclarée `>=3.11,<3.13`. C3 vérifiera donc également une installation propre avec un interpréteur pris en charge.
 
 ## A1 — Échantillon insuffisant pour le contrôle de look-ahead

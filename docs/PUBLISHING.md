@@ -21,23 +21,30 @@ resolved.
 
 ## Release checklist
 
-Before publishing a release:
+Before publishing a release, start from a clean checkout and a new virtual
+environment using a supported Python version (3.11 or 3.12), then run:
 
 ```bash
+python -m venv .venv-release
+. .venv-release/bin/activate
+python -m pip install --upgrade pip
 python -m pip install -e '.[dev]'
-python -m pytest
+python -m pytest --cov=core --cov-report=term-missing --cov-fail-under=90
 python -m ruff check core tests examples
+python -m ruff format --check core tests examples
+python -m mypy core tests examples
 python -m build
 ```
 
-Check that both artifacts in `dist/` are named
-`mif_foundation-<version>.*`, then create and publish a GitHub Release.
-The release event starts the protected workflow, which builds fresh artifacts
-and uploads them to PyPI.
+Check that the worktree is still clean, that both artifacts in `dist/` are
+named `mif_foundation-<version>.*`, and that their metadata contains the
+expected version and dependency constraints. Then create and publish a GitHub
+Release from the matching tag. The release event starts the protected
+workflow, which builds fresh artifacts and uploads them to PyPI.
 
 The first stable release uses version `0.1.0`. Future releases must increment
-the version before building or publishing again, and should be tested in a
-clean virtual environment with:
+the version before building or publishing again. Verify the published artifact
+in a second clean virtual environment with:
 
 ```bash
 python -m pip install mif-foundation
