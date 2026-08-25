@@ -272,6 +272,14 @@ class CoreContractTests(unittest.TestCase):
             Certifier(default_catalog()).certify(
                 ExampleStrategy(), handoff, ["T_HANDOFF_001"]
             )
+
+    def test_dal_boundary_rejects_empty_stream(self):
+        handoff = Handoff()
+        handoff.stream = []
+        with self.assertRaisesRegex(HandoffContractError, "stream must not be empty"):
+            Certifier(default_catalog()).certify(
+                ExampleStrategy(), handoff, ["T_HANDOFF_001"]
+            )
         handoff.aqi = True
         with self.assertRaises(HandoffContractError):
             Certifier(default_catalog()).certify(

@@ -66,3 +66,34 @@ Sorties brutes :
 
     .                                                                        [100%]
     ............................................                             [100%]
+
+## A2 — Rejet d'un flux DAL vide
+
+Test ajouté : `CoreContractTests.test_dal_boundary_rejects_empty_stream`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_dal_boundary_rejects_empty_stream -q
+
+Sortie brute :
+
+    F                                                                        [100%]
+    =================================== FAILURES ===================================
+    ___________ CoreContractTests.test_dal_boundary_rejects_empty_stream ___________
+    tests/test_core_contracts.py:279: in test_dal_boundary_rejects_empty_stream
+        with self.assertRaisesRegex(HandoffContractError, "stream must not be empty"):
+    E   AssertionError: HandoffContractError not raised
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_dal_boundary_rejects_empty_stream
+
+Correction : la frontière DAL lève désormais `HandoffContractError` lorsque `len(stream) == 0`.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_dal_boundary_rejects_empty_stream -q
+    .venv/bin/python -m pytest -q
+
+Sorties brutes :
+
+    .                                                                        [100%]
+    .............................................                            [100%]

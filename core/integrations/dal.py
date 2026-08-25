@@ -34,6 +34,8 @@ def validate_dal_handoff(handoff: Any) -> None:
             raise HandoffContractError(f"handoff {name} must be a non-empty string")
     if not hasattr(handoff.stream, "__len__"):
         raise HandoffContractError("handoff stream must be sized")
+    if len(handoff.stream) == 0:
+        raise HandoffContractError("handoff stream must not be empty")
     if handoff.dqf_status not in {"PASS", "WARNING"}:
         raise HandoffContractError(f"unsupported dqf_status: {handoff.dqf_status!r}")
     if not isinstance(handoff.source_manifest, tuple) or not handoff.source_manifest:
