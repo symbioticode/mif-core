@@ -1,14 +1,14 @@
-from dataclasses import dataclass
 import json
-from typing import Any, Dict
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(frozen=True)
 class CertificationReport:
     strategy_name: str
-    tests_run: Dict[str, Dict[str, Any]]
+    tests_run: dict[str, dict[str, Any]]
     status: str
-    validity_domain: Dict[str, Any]
+    validity_domain: dict[str, Any]
     tier: str = "C"
 
     def __post_init__(self) -> None:
@@ -23,7 +23,7 @@ class CertificationReport:
         ):
             raise TypeError("tests_run and validity_domain must be dictionaries")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "strategy_name": self.strategy_name,
             "status": self.status,
@@ -34,7 +34,7 @@ class CertificationReport:
 
     def to_json(self) -> str:
         """Serialize the report using the stable dictionary representation."""
-        return json.dumps(self.to_dict(), sort_keys=True)
+        return json.dumps(self.to_dict(), default=repr, sort_keys=True)
 
     def to_text(self) -> str:
         """Render a compact human-readable report without losing test detail."""
@@ -55,6 +55,8 @@ class CertificationReport:
             if result.get("threshold") is not None:
                 line += f" threshold={result['threshold']}"
             if result.get("details"):
-                line += " details=" + json.dumps(result["details"], sort_keys=True)
+                line += " details=" + json.dumps(
+                    result["details"], default=repr, sort_keys=True
+                )
             lines.append(line)
         return "\n".join(lines)

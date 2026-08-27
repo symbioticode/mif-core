@@ -1,9 +1,8 @@
 from typing import Any
 
-from ..strategy import StrategyAdapter
-from ..testing import TestCatalog
-from ..testing import TestResult
 from ..integrations.dal import validate_dal_handoff
+from ..strategy import StrategyAdapter
+from ..testing import TestCatalog, TestResult
 from .report import CertificationReport
 from .tiers import calculate_tier
 
@@ -35,11 +34,22 @@ class Certifier:
             definition = self.catalog.get(test_id)
             try:
                 result = definition.execute(strategy=strategy, handoff=handoff)
-            except Exception as exc:
+            # Extension code is untrusted; every failure becomes report evidence.
+            except Exception as exc:  # noqa: BLE001
                 result = {
                     "passed": False,
                     "value": None,
                     "details": {"error": str(exc)},
+                }
+            if not isinstance(result, dict):
+                result = {
+                    "passed": False,
+                    "value": None,
+                    "details": {
+                        "error": (
+                            f"test returned {type(result).__name__}, expected dict"
+                        )
+                    },
                 }
             normalized = TestResult(
                 test_id=test_id,

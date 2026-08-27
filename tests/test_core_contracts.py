@@ -1,9 +1,11 @@
-import unittest
-from dataclasses import dataclass
 import json
+import tomllib
+import unittest
 from contextlib import redirect_stdout
+from dataclasses import dataclass
 from fractions import Fraction
 from io import StringIO
+from pathlib import Path
 
 from core import (
     Certifier,
@@ -15,20 +17,28 @@ from core import (
     StrategyAdapter,
     StrategyMetadata,
     StrategyRegistry,
-    TestCatalog as Catalog,
-    TestDefinition as Definition,
-    TestResult as Result,
     __version__,
     default_catalog,
 )
-from core.certification.tiers import calculate_tier
+from core import (
+    TestCatalog as Catalog,
+)
+from core import (
+    TestDefinition as Definition,
+)
+from core import (
+    TestResult as Result,
+)
 from core.certification.report import CertificationReport
+from core.certification.tiers import calculate_tier
 from core.cli import main as cli_main
 from core.integrations.dal import HandoffContractError
 
 
 class Handoff:
-    stream = [1, 2, 3]
+    def __init__(self):
+        self.stream = [1, 2, 3]
+
     asset_id = "BTC-USD"
     calendar = "CRYPTO_247"
     assembly_hash = "a" * 64
@@ -71,16 +81,30 @@ class ExampleStrategy(StrategyAdapter):
 
 
 class CoreContractTests(unittest.TestCase):
+    def test_development_extra_includes_build_frontend(self):
+        configuration = tomllib.loads(Path("pyproject.toml").read_text())
+        development_dependencies = configuration["project"]["optional-dependencies"][
+            "dev"
+        ]
+        self.assertTrue(
+            any(
+                dependency.split(">=", 1)[0] == "build"
+                for dependency in development_dependencies
+            )
+        )
+
     def test_metadata_rejects_unknown_frequency(self):
         with self.assertRaises(ValueError):
             StrategyMetadata("bad", "unknown", "1D", 1, 1)
+        with self.assertRaises(TypeError):
+            StrategyMetadata(1, "medium", "1D", 1, 1)  # type: ignore[arg-type]
         with self.assertRaises(TypeError):
             StrategyMetadata("bad", "medium", "1D", True, 1)
         with self.assertRaises(TypeError):
             StrategyMetadata("bad", "medium", "1D", 1, 1, ["crypto"])  # type: ignore[arg-type]
         with self.assertRaises(ValueError):
             MetricMetadata("", "performance", "scalar")
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             MetricMetadata("name", "performance", "scalar", 1)  # type: ignore[arg-type]
 
     def test_package_version_is_exposed(self):
@@ -90,7 +114,7 @@ class CoreContractTests(unittest.TestCase):
         result = Result("T", "test", "strategy", True, 1, {})
         self.assertEqual(result.to_dict()["schema_version"], 1)
         with self.assertRaises(TypeError):
-            Result("T", "test", "strategy", 1, 1, {})
+            Result("T", "test", "strategy", 1, 1, {})  # type: ignore[arg-type]
         with self.assertRaises(TypeError):
             Result(
                 "T",
@@ -98,8 +122,8 @@ class CoreContractTests(unittest.TestCase):
                 "strategy",
                 True,
                 1,
-                [],
-            )  # type: ignore[arg-type]
+                [],  # type: ignore[arg-type]
+            )
         with self.assertRaises(TypeError):
             Result("T", "test", "strategy", True, 1, {}, schema_version=True)
         with self.assertRaises(ValueError):
@@ -278,6 +302,14 @@ class CoreContractTests(unittest.TestCase):
                 ExampleStrategy(), handoff, ["T_HANDOFF_001"]
             )
 
+    def test_dal_boundary_rejects_empty_stream(self):
+        handoff = Handoff()
+        handoff.stream = []
+        with self.assertRaisesRegex(HandoffContractError, "stream must not be empty"):
+            Certifier(default_catalog()).certify(
+                ExampleStrategy(), handoff, ["T_HANDOFF_001"]
+            )
+
     def test_builtin_catalog_certifies_signal_shape(self):
         report = Certifier(default_catalog()).certify(
             ExampleStrategy(), Handoff(), ["T_HANDOFF_001", "T_SIGNAL_SHAPE_001"]
@@ -297,13 +329,35 @@ class CoreContractTests(unittest.TestCase):
     def test_test_exception_becomes_explicit_failure(self):
         catalog = Catalog()
         catalog.register(
-            Definition("T_RAISE", "raising test", "strategy", lambda **_: 1 / 0)
+            Definition(
+                "T_RAISE",
+                "raising test",
+                "strategy",
+                lambda **_: 1 / 0,  # type: ignore[arg-type]
+            )
         )
         report = Certifier(catalog).certify(ExampleStrategy(), Handoff(), ["T_RAISE"])
         self.assertEqual(report.status, "FAIL")
         self.assertEqual(
             report.tests_run["T_RAISE"]["details"]["error"], "division by zero"
         )
+
+    def test_non_mapping_test_result_becomes_explicit_failure(self):
+        catalog = Catalog()
+        catalog.register(
+            Definition(
+                "T_BAD_RESULT",
+                "bad result",
+                "strategy",
+                lambda **_: 42,  # type: ignore[arg-type]
+            )
+        )
+        report = Certifier(catalog).certify(
+            ExampleStrategy(), Handoff(), ["T_BAD_RESULT"]
+        )
+        result = report.tests_run["T_BAD_RESULT"]
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(result["details"]["error"], "test returned int, expected dict")
 
     def test_tiers_are_deterministic_and_empty_is_conservative(self):
         self.assertEqual(calculate_tier({}), "C")
@@ -322,12 +376,37 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             CertificationReport("example", [], "PASS", {})  # type: ignore[arg-type]
 
+    def test_certification_report_serializes_arbitrary_details_as_repr(self):
+        class OpaqueDetail:
+            def __repr__(self):
+                return "<opaque-detail>"
+
+        report = CertificationReport(
+            "example",
+            {
+                "T_OPAQUE": {
+                    "test_id": "T_OPAQUE",
+                    "status": "FAIL",
+                    "test_name": "opaque",
+                    "value": None,
+                    "details": {"payload": OpaqueDetail()},
+                }
+            },
+            "FAIL",
+            {},
+        )
+        self.assertEqual(
+            json.loads(report.to_json())["tests_run"]["T_OPAQUE"]["details"]["payload"],
+            "<opaque-detail>",
+        )
+        self.assertIn('"payload": "<opaque-detail>"', report.to_text())
+
     def test_criteria_policy_is_validated_and_injectable(self):
         with self.assertRaises(ValueError):
             CriteriaPolicy(default_positive_rate=1.1)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             CriteriaPolicy(default_positive_rate=True)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             CriteriaPolicy(walk_forward_step=True)
         with self.assertRaises(ValueError):
             CriteriaPolicy(walk_forward_train_observations=0)
@@ -382,6 +461,21 @@ class CoreContractTests(unittest.TestCase):
         )
         self.assertEqual(report.status, "PASS")
         self.assertEqual(report.tests_run["T_STABILITY_001"]["threshold"], 0.50)
+
+    def test_stability_reports_zero_and_negative_observations(self):
+        class MixedSignStrategy(ExampleStrategy):
+            def backtest(self, handoff):
+                return {"returns": [0.1, 0.0, -0.1, 0.0]}
+
+        report = Certifier(default_catalog()).certify(
+            MixedSignStrategy(), Handoff(), ["T_STABILITY_001"]
+        )
+        result = report.tests_run["T_STABILITY_001"]
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(result["value"], 0.25)
+        self.assertEqual(result["details"]["positive_observations"], 1)
+        self.assertEqual(result["details"]["zero_observations"], 2)
+        self.assertEqual(result["details"]["negative_observations"], 1)
 
     def test_return_integrity_accepts_finite_numeric_returns(self):
         report = Certifier(default_catalog()).certify(
@@ -501,6 +595,15 @@ class CoreContractTests(unittest.TestCase):
             ExampleStrategy(), FrozenHandoff([1, 2, 3]), ["T_LOOKAHEAD_001"]
         )
         self.assertEqual(report.status, "PASS")
+
+    def test_lookahead_rejects_insufficient_sample(self):
+        report = Certifier(default_catalog()).certify(
+            ExampleStrategy(), FrozenHandoff([1]), ["T_LOOKAHEAD_001"]
+        )
+        result = report.tests_run["T_LOOKAHEAD_001"]
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(result["details"]["reason"], "insufficient sample")
+        self.assertEqual(result["details"]["observations"], 1)
 
     def test_lookahead_test_rejects_future_dependent_strategy(self):
         class LeakingStrategy(ExampleStrategy):

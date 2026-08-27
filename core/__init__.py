@@ -1,6 +1,8 @@
 from importlib.metadata import PackageNotFoundError, version
 
-from .certification import Certifier, CertificationReport, calculate_tier
+from .certification import CertificationReport, Certifier, calculate_tier
+from .integrations import validate_dal_handoff
+from .metric import MetricAdapter, MetricCertifier, MetricMetadata, MetricRegistry
 from .strategy import StrategyAdapter, StrategyMetadata, StrategyRegistry
 from .testing import (
     CriteriaPolicy,
@@ -9,30 +11,28 @@ from .testing import (
     TestResult,
     default_catalog,
 )
-from .integrations import validate_dal_handoff
-from .metric import MetricAdapter, MetricCertifier, MetricMetadata, MetricRegistry
 
 try:
     __version__ = version("mif-foundation")
 except PackageNotFoundError:
-    __version__ = "0.1.0"
+    __version__ = "0+unknown"
 
 __all__ = [
-    "Certifier",
     "CertificationReport",
-    "calculate_tier",
-    "StrategyAdapter",
-    "StrategyMetadata",
+    "Certifier",
     "CriteriaPolicy",
     "MetricAdapter",
     "MetricCertifier",
     "MetricMetadata",
     "MetricRegistry",
+    "StrategyAdapter",
+    "StrategyMetadata",
     "StrategyRegistry",
     "TestCatalog",
     "TestDefinition",
     "TestResult",
+    "__version__",
+    "calculate_tier",
     "default_catalog",
     "validate_dal_handoff",
-    "__version__",
 ]

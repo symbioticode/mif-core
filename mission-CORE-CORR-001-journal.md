@@ -1,0 +1,410 @@
+# Journal d'exécution — CORE-CORR-001
+
+Branche : `fix/audit-core-corr-001`  
+Point de départ : tag `v0.1.0`, commit `dfb1ab9943d78f60101cb1f903def82b17edc36d`
+
+Ce journal consigne les commandes exécutées, les échecs observés avant correction et les résultats après correction. Il constitue une preuve d'exécution, pas une certification indépendante.
+
+## Baseline
+
+Commande initiale avec le Python système :
+
+    python -m pytest --cov=core --cov-report=term-missing --cov-fail-under=90
+
+Sortie brute :
+
+    /run/current-system/sw/bin/python: No module named pytest
+
+Le dépôt possédait déjà un environnement local. Commandes rejouées :
+
+    .venv/bin/python --version
+    .venv/bin/python -m pytest --cov=core --cov-report=term-missing --cov-fail-under=90
+    .venv/bin/python -m ruff check core tests examples
+    .venv/bin/python -m mypy core tests
+
+Sorties brutes significatives :
+
+    Python 3.13.5
+    43 passed in 0.95s
+    TOTAL 500 34 93%
+    Required test coverage of 90% reached. Total coverage: 93.20%
+    Found 35 errors.
+    [*] 20 fixable with the `--fix` option.
+    Success: no issues found in 25 source files
+
+## C2 — Ruff comme barrière CI
+
+État avant correction (commande baseline) :
+
+    .venv/bin/python -m ruff check core tests examples
+
+Sortie brute synthétique de Ruff :
+
+    Found 35 errors.
+    [*] 20 fixable with the `--fix` option.
+
+La CI exécute désormais `ruff check`; les familles `E4`, `E7`, `E9`, `F`, `I`, `UP`, `RUF`, `BLE` et `TRY` sont sélectionnées explicitement.
+
+Précision : seules les règles auditables utiles de ces deux dernières familles sont activées (`BLE001` et `TRY004`), afin de corriger les 35 constats sans imposer une refonte hors périmètre. Les captures `Exception` sont conservées aux frontières d'extension, commentées et annotées : leur contrat exige de convertir toute défaillance d'un adaptateur en preuve FAIL déterministe.
+
+Commandes après correction :
+
+    .venv/bin/python -m ruff check core tests examples
+    .venv/bin/python -m ruff format --check core tests examples
+    .venv/bin/python -m pytest -q
+    .venv/bin/python -m mypy core tests
+
+Sorties brutes :
+
+    All checks passed!
+    27 files already formatted
+    ...............................................                          [100%]
+    Success: no issues found in 25 source files
+
+## C3 — Frontend de build dans les dépendances de développement
+
+Test ajouté : `CoreContractTests.test_development_extra_includes_build_frontend`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_development_extra_includes_build_frontend -q
+
+Sortie brute :
+
+    F                                                                        [100%]
+    =================================== FAILURES ===================================
+    _______ CoreContractTests.test_development_extra_includes_build_frontend _______
+    tests/test_core_contracts.py:88: in test_development_extra_includes_build_frontend
+        self.assertTrue(
+    E   AssertionError: False is not true
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_development_extra_includes_build_frontend
+
+Correction : `build>=1.2.0` appartient maintenant à l'extra `dev`; la CI n'effectue plus d'installation ad hoc avant `python -m build`.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_development_extra_includes_build_frontend -q
+    c3_env_dir=$(mktemp -d -t mif-core-c3.XXXXXX)
+    uv venv --python 3.12 --seed "$c3_env_dir"
+    "$c3_env_dir/bin/python" -m pip install -e '.[dev]'
+    "$c3_env_dir/bin/python" -m build
+
+Sorties brutes significatives :
+
+    .                                                                        [100%]
+    C3_ENV=/tmp/mif-core-c3.ID5c7T
+    Using CPython 3.12.14 interpreter at: /run/current-system/sw/bin/python3.12
+    Successfully installed ... build-1.5.0 ... mif-foundation-0.1.0 ...
+    Successfully built mif_foundation-0.1.0.tar.gz and mif_foundation-0.1.0-py3-none-any.whl
+
+## D1 — Comptage des rendements nuls et négatifs
+
+Test ajouté : `CoreContractTests.test_stability_reports_zero_and_negative_observations`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_stability_reports_zero_and_negative_observations -q
+
+Sortie brute :
+
+    F                                                                        [100%]
+    =================================== FAILURES ===================================
+    ___ CoreContractTests.test_stability_reports_zero_and_negative_observations ____
+    tests/test_core_contracts.py:466: in test_stability_reports_zero_and_negative_observations
+        self.assertEqual(result["details"]["zero_observations"], 2)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    E   KeyError: 'zero_observations'
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_stability_reports_zero_and_negative_observations
+
+Correction : les détails exposent les trois partitions positive, nulle et négative; la formule du taux et le seuil restent inchangés.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_stability_reports_zero_and_negative_observations -q
+    .venv/bin/python -m pytest -q
+
+Sorties brutes :
+
+    .                                                                        [100%]
+    .................................................                        [100%]
+
+## D2 — Cohérence de la documentation de release
+
+Constat avant correction :
+
+    CHANGELOG.md: les fonctions déjà livrées par v0.1.0 figuraient sous Unreleased
+    docs/ROADMAP.md: 5. Define a stable `0.1` API and only then prepare the first PyPI release.
+    docs/PUBLISHING.md: la checklist omettait couverture, format Ruff, mypy et environnement propre
+
+Correction : les éléments historiques sont rattachés à 0.1.0; seules les corrections post-tag restent sous `Unreleased`. La roadmap indique la publication de 0.1.0 et la checklist reproduit les contrôles CI dans deux environnements propres.
+
+## D3 — Nom canonique de DAL
+
+Commande avant correction :
+
+    rg -n 'mif-dal-en' . --glob '!mission-CORE-CORR-001-journal.md'
+
+Sortie brute :
+
+    ./README.md:58:`mif-dal-en`.
+    ./docs/ARCHITECTURE.md:17:The input boundary is one certified `DALHandoff` from `mif-dal-en`. CORE does
+    ./docs/API.md:38:fetch data; production callers provide a `DALHandoff` from `mif-dal-en`.
+
+Correction : les trois occurrences utilisent maintenant le nom canonique `mif-dal`.
+
+Vérification après correction :
+
+    PASS: no mif-dal-en occurrence remains
+
+## D4 — Périmètre mypy et exemples
+
+Commandes avant correction :
+
+    .venv/bin/python -m mypy examples
+    .venv/bin/python -m mypy --strict core tests examples
+
+Sorties brutes :
+
+    Success: no issues found in 2 source files
+    Found 88 errors in 5 files (checked 27 source files)
+
+Décision : conserver `strict = false` pour l'API 0.1, dont les frontières d'adaptateurs acceptent encore des objets tiers dynamiques. `check_untyped_defs = true` vérifie néanmoins leurs corps. La CI et la checklist de publication couvrent désormais explicitement `core tests examples`; cette limite est documentée dans l'architecture.
+
+Le contrôle renforcé a exposé cinq tests négatifs qui transmettent volontairement des types invalides. Ils portent maintenant des suppressions `arg-type` locales. Il a aussi permis de rétablir le test AQI booléen dans son scénario d'origine, séparé du test de flux vide.
+
+Commandes après correction :
+
+    .venv/bin/python -m mypy core tests examples
+    .venv/bin/python -m ruff check core tests examples
+    .venv/bin/python -m pytest --cov=core --cov-report=term-missing --cov-fail-under=90
+
+Sorties brutes :
+
+    Success: no issues found in 27 source files
+    All checks passed!
+    49 passed in 0.78s
+    Required test coverage of 90% reached. Total coverage: 93.15%
+
+## Recette finale
+
+Recette rejouée avec l'environnement propre Python 3.12.14 créé pour C3 :
+
+    /tmp/mif-core-c3.ID5c7T/bin/python -m pytest --cov=core --cov-report=term-missing --cov-fail-under=90
+    /tmp/mif-core-c3.ID5c7T/bin/python -m ruff check core tests examples
+    /tmp/mif-core-c3.ID5c7T/bin/python -m ruff format --check core tests examples
+    /tmp/mif-core-c3.ID5c7T/bin/python -m mypy core tests examples
+    /tmp/mif-core-c3.ID5c7T/bin/python -m build
+
+Sorties brutes significatives :
+
+    48 passed, 1 skipped in 0.81s
+    Required test coverage of 90% reached. Total coverage: 93.15%
+    All checks passed!
+    27 files already formatted
+    Success: no issues found in 27 source files
+    Successfully built mif_foundation-0.1.0.tar.gz and mif_foundation-0.1.0-py3-none-any.whl
+
+Le skip d'intégration dans ce venv est propre à l'hôte NixOS : la wheel NumPy téléchargée ne résout pas `libz.so.1`, puis `libstdc++.so.6`, sans enveloppe Nix. Le même test canonique passe dans le venv préexistant (`49 passed`) et la CI Ubuntu vérifie explicitement l'import `DALHandoff` sous Python 3.11 et 3.12. Ce constat d'environnement ne masque aucun échec du code CORE.
+
+## E1 — Nommage public
+
+État : `DECIDED` le 2026-08-26.
+
+- dépôt, produit et CLI : `mif-core` ;
+- distribution PyPI : `mif-foundation` ;
+- package importable : `core`.
+
+La séparation est conservée parce que `mif-foundation` est déjà publié sur
+PyPI. Un renommage créerait une migration et un second nom de distribution sans
+bénéfice fonctionnel. La décision est inscrite dans `docs/PUBLISHING.md`.
+
+La release CORE-CORR-001 est fixée à `0.2.0` : C1 change le type d'exception
+observable de `CriteriaPolicy`, donc un bump mineur pré-1.0 est plus explicite
+qu'un patch `0.1.1`.
+
+## Séquence des commits
+
+    fix(A1): reject undersized lookahead samples
+    fix(A2): reject empty DAL streams
+    fix(B1): normalize invalid test results
+    fix(B2): serialize opaque report details safely
+    fix(C1): align validation exception contracts
+    chore(C2): enforce Ruff lint in CI
+    build(C3): include build frontend in dev extra
+    feat(D1): report stability sign counts
+    docs(D2): reconcile release documentation
+    docs(D3): use canonical mif-dal name
+    ci(D4): define gradual typing boundary
+
+Note : cet environnement préexistant utilise Python 3.13.5, hors de la plage déclarée `>=3.11,<3.13`. C3 vérifiera donc également une installation propre avec un interpréteur pris en charge.
+
+## A1 — Échantillon insuffisant pour le contrôle de look-ahead
+
+Test ajouté : `CoreContractTests.test_lookahead_rejects_insufficient_sample`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_lookahead_rejects_insufficient_sample -q
+
+Sortie brute :
+
+    F                                                                        [100%]
+    =================================== FAILURES ===================================
+    _________ CoreContractTests.test_lookahead_rejects_insufficient_sample _________
+    tests/test_core_contracts.py:510: in test_lookahead_rejects_insufficient_sample
+        self.assertEqual(report.status, "FAIL")
+    E   AssertionError: 'PASS' != 'FAIL'
+    E   - PASS
+    E   + FAIL
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_lookahead_rejects_insufficient_sample
+
+Correction : `_no_lookahead` produit maintenant un échec explicite avec `reason=insufficient sample`, le nombre d'observations et le minimum requis.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_lookahead_rejects_insufficient_sample -q
+    .venv/bin/python -m pytest -q
+
+Sorties brutes :
+
+    .                                                                        [100%]
+    ............................................                             [100%]
+
+## A2 — Rejet d'un flux DAL vide
+
+Test ajouté : `CoreContractTests.test_dal_boundary_rejects_empty_stream`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_dal_boundary_rejects_empty_stream -q
+
+Sortie brute :
+
+    F                                                                        [100%]
+    =================================== FAILURES ===================================
+    ___________ CoreContractTests.test_dal_boundary_rejects_empty_stream ___________
+    tests/test_core_contracts.py:279: in test_dal_boundary_rejects_empty_stream
+        with self.assertRaisesRegex(HandoffContractError, "stream must not be empty"):
+    E   AssertionError: HandoffContractError not raised
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_dal_boundary_rejects_empty_stream
+
+Correction : la frontière DAL lève désormais `HandoffContractError` lorsque `len(stream) == 0`.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_dal_boundary_rejects_empty_stream -q
+    .venv/bin/python -m pytest -q
+
+Sorties brutes :
+
+    .                                                                        [100%]
+    .............................................                            [100%]
+
+## B1 — Résultat de test non dictionnaire
+
+Test ajouté : `CoreContractTests.test_non_mapping_test_result_becomes_explicit_failure`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_non_mapping_test_result_becomes_explicit_failure -q
+
+Sortie brute :
+
+    F                                                                        [100%]
+    =================================== FAILURES ===================================
+    ___ CoreContractTests.test_non_mapping_test_result_becomes_explicit_failure ____
+    tests/test_core_contracts.py:321: in test_non_mapping_test_result_becomes_explicit_failure
+        report = Certifier(catalog).certify(
+    core/certification/certifier.py:48: in certify
+        passed=result.get("passed", False) is True,
+               ^^^^^^^^^^
+    E   AttributeError: 'int' object has no attribute 'get'
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_non_mapping_test_result_becomes_explicit_failure
+
+Correction : tout retour non dictionnaire est normalisé en résultat FAIL et son type réel est conservé dans le diagnostic.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_non_mapping_test_result_becomes_explicit_failure -q
+    .venv/bin/python -m pytest -q
+
+Sorties brutes :
+
+    .                                                                        [100%]
+    ..............................................                           [100%]
+
+## B2 — Sérialisation robuste des détails arbitraires
+
+Test ajouté : `CoreContractTests.test_certification_report_serializes_arbitrary_details_as_repr`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_certification_report_serializes_arbitrary_details_as_repr -q
+
+Sortie brute :
+
+    F                                                                        [100%]
+    =================================== FAILURES ===================================
+    _ CoreContractTests.test_certification_report_serializes_arbitrary_details_as_repr _
+    tests/test_core_contracts.py:365: in test_certification_report_serializes_arbitrary_details_as_repr
+        json.loads(report.to_json())["tests_run"]["T_OPAQUE"]["details"][
+    core/certification/report.py:37: in to_json
+        return json.dumps(self.to_dict(), sort_keys=True)
+    E   TypeError: Object of type OpaqueDetail is not JSON serializable
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_certification_report_serializes_arbitrary_details_as_repr
+
+Correction : les deux rendus utilisent le mécanisme standard `json.dumps(default=repr)` pour dégrader uniquement les objets non sérialisables en texte.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_certification_report_serializes_arbitrary_details_as_repr -q
+    .venv/bin/python -m pytest -q
+
+Sorties brutes :
+
+    .                                                                        [100%]
+    ...............................................                          [100%]
+
+## C1 — Types d'exception des métadonnées et politiques
+
+Contrat testé : mauvais type → `TypeError`; valeur du bon type mais invalide → `ValueError`.
+
+Commande avant correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_metadata_rejects_unknown_frequency tests/test_core_contracts.py::CoreContractTests::test_criteria_policy_is_validated_and_injectable -q
+
+Sortie brute :
+
+    FF                                                                       [100%]
+    =================================== FAILURES ===================================
+    __________ CoreContractTests.test_metadata_rejects_unknown_frequency ___________
+    core/strategy/metadata.py:21: in __post_init__
+        raise ValueError("strategy identity fields must be non-empty strings")
+    E   ValueError: strategy identity fields must be non-empty strings
+    ______ CoreContractTests.test_criteria_policy_is_validated_and_injectable ______
+    core/testing/policy.py:26: in __post_init__
+        raise ValueError(f"{name} must be numeric")
+    E   ValueError: default_positive_rate must be numeric
+    =========================== short test summary info ============================
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_metadata_rejects_unknown_frequency
+    FAILED tests/test_core_contracts.py::CoreContractTests::test_criteria_policy_is_validated_and_injectable
+
+Correction : les validations séparent désormais le type de la valeur dans les trois contrats publics; l'évolution est inscrite au changelog.
+
+Commandes après correction :
+
+    .venv/bin/python -m pytest tests/test_core_contracts.py::CoreContractTests::test_metadata_rejects_unknown_frequency tests/test_core_contracts.py::CoreContractTests::test_criteria_policy_is_validated_and_injectable -q
+    .venv/bin/python -m pytest -q
+    .venv/bin/python -m mypy core tests
+
+Sorties brutes :
+
+    ..                                                                       [100%]
+    ...............................................                          [100%]
+    Success: no issues found in 25 source files

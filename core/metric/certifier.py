@@ -24,7 +24,8 @@ class MetricCertifier:
         }
         try:
             output = metric.calculate(handoff)
-        except Exception as exc:
+        # Adapter code is untrusted; every failure becomes report evidence.
+        except Exception as exc:  # noqa: BLE001
             return {
                 "schema_version": 1,
                 "metric_name": metric.metadata.name,

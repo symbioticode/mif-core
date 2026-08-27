@@ -26,7 +26,8 @@ because its selected tests pass.
 4. Done: CI imports the canonical `DALHandoff`, runs the integration suite, and
   covers Python 3.11 and 3.12. Python 3.13 is deferred until the canonical
   `mif-dal` dependency can install its NumPy constraint on that interpreter.
-5. Define a stable `0.1` API and only then prepare the first PyPI release.
+5. Done: the stable `0.1` API was tagged and published as `mif-foundation`
+   0.1.0.
 
 Every phase must preserve explicit selection, provenance, deterministic
 offline tests, and transparent failure details.

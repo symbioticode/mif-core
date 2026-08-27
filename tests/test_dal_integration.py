@@ -1,7 +1,7 @@
 """Integration checks against the canonical mif-dal handoff contract."""
 
 import unittest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 try:
     import pandas as pd
@@ -29,7 +29,7 @@ class CanonicalDalIntegrationTests(unittest.TestCase):
             asset_id="TEST-USD",
             calendar="CRYPTO_247",
             assembly_hash="a" * 64,
-            handoff_timestamp=datetime.now(timezone.utc),
+            handoff_timestamp=datetime.now(UTC),
             dal_version="0.1.0",
             source_manifest=({"source": "in_memory"},),
             coverage="FULL",

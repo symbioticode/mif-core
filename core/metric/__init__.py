@@ -1,6 +1,6 @@
 from .adapter import MetricAdapter
-from .metadata import MetricMetadata
 from .certifier import MetricCertifier
+from .metadata import MetricMetadata
 from .registry import MetricRegistry
 
-__all__ = ["MetricAdapter", "MetricMetadata", "MetricCertifier", "MetricRegistry"]
+__all__ = ["MetricAdapter", "MetricCertifier", "MetricMetadata", "MetricRegistry"]

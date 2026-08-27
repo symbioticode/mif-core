@@ -16,8 +16,9 @@ from core import (
 )
 ```
 
-`core.__version__` exposes the installed package version and falls back to the
-development version when imported directly from a checkout.
+`core.__version__` exposes the installed package version and falls back to
+`0+unknown` when imported from a checkout without distribution metadata. The
+fallback must not impersonate a published release.
 
 ## Boundaries
 
@@ -35,7 +36,7 @@ development version when imported directly from a checkout.
 `CertificationReport.to_dict()`, `to_json()`, and `to_text()` are the stable
 report export methods. Metric certification results include the same asset,
 calendar, coverage, DQF status, and assembly hash validity domain. CORE does not
-fetch data; production callers provide a `DALHandoff` from `mif-dal-en`.
+fetch data; production callers provide a `DALHandoff` from `mif-dal`.
 Metric results expose `schema_version=1` for forward-compatible consumers.
 
 ## Selection and errors
