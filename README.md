@@ -1,6 +1,7 @@
 # mif-core
 
-[![Tests](https://github.com/symbioticode/mif-core/actions/workflows/ci.yml/badge.svg)](https://github.com/symbioticode/mif-core/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/tests-49%2F49%20passing-brightgreen)](https://github.com/symbioticode/mif-core/actions/workflows/ci.yml)
+[![CI](https://github.com/symbioticode/mif-core/actions/workflows/ci.yml/badge.svg)](https://github.com/symbioticode/mif-core/actions/workflows/ci.yml)
 [![PyPI version](https://img.shields.io/pypi/v/mif-foundation)](https://pypi.org/project/mif-foundation/)
 [![Python versions](https://img.shields.io/pypi/pyversions/mif-foundation)](https://pypi.org/project/mif-foundation/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](LICENSE)
