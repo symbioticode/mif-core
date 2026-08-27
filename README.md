@@ -1,6 +1,9 @@
 # mif-core
 
-[![CI](https://github.com/symbioticode/mif-core/actions/workflows/ci.yml/badge.svg)](https://github.com/symbioticode/mif-core/actions/workflows/ci.yml)
+[![Tests](https://github.com/symbioticode/mif-core/actions/workflows/ci.yml/badge.svg)](https://github.com/symbioticode/mif-core/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/mif-foundation)](https://pypi.org/project/mif-foundation/)
+[![Python versions](https://img.shields.io/pypi/pyversions/mif-foundation)](https://pypi.org/project/mif-foundation/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](LICENSE)
 
 The metric and strategy qualification layer of the Metric Integrity Framework.
 
@@ -11,6 +14,17 @@ mif-dqf  → certifies data quality
 mif-dal  → assembles and hands off certified data
 mif-core → qualifies metrics and strategies
 ```
+
+| Layer | Repository | PyPI distribution | Python import | Responsibility |
+|---|---|---|---|---|
+| MIF-DQF | [`symbioticode/mif-dqf`](https://github.com/symbioticode/mif-dqf) | [`mif-dqf`](https://pypi.org/project/mif-dqf/) | `dqf` | Certify the physical and structural quality of market data. |
+| MIF-DAL | [`symbioticode/mif-dal`](https://github.com/symbioticode/mif-dal) | [`mif-dal`](https://pypi.org/project/mif-dal/) | `dal` | Assemble reproducible streams and produce certified handoffs. |
+| MIF Core | [`symbioticode/mif-core`](https://github.com/symbioticode/mif-core) | [`mif-foundation`](https://pypi.org/project/mif-foundation/) | `core` | Qualify metrics and strategies against explicit offline tests. |
+
+The three packages form one directional contract: DQF certifies the data, DAL
+assembles and transports the certified handoff, and Core evaluates what is
+computed from that handoff. Each package remains installable and versioned
+independently.
 
 This first increment defines explicit contracts and a deterministic offline
 catalogue. Tests are selected explicitly; no hidden one-size-fits-all protocol
