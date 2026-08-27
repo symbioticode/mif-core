@@ -210,7 +210,19 @@ Le skip d'intégration dans ce venv est propre à l'hôte NixOS : la wheel NumPy
 
 ## E1 — Nommage public
 
-État : `BLOCKED_BY_HUMAN_DECISION` conformément à la mission. Aucun renommage n'a été effectué. La décision reste à prendre entre le dépôt/CLI `mif-core`, la distribution `mif-foundation` et le package importable `core`.
+État : `DECIDED` le 2026-08-26.
+
+- dépôt, produit et CLI : `mif-core` ;
+- distribution PyPI : `mif-foundation` ;
+- package importable : `core`.
+
+La séparation est conservée parce que `mif-foundation` est déjà publié sur
+PyPI. Un renommage créerait une migration et un second nom de distribution sans
+bénéfice fonctionnel. La décision est inscrite dans `docs/PUBLISHING.md`.
+
+La release CORE-CORR-001 est fixée à `0.2.0` : C1 change le type d'exception
+observable de `CriteriaPolicy`, donc un bump mineur pré-1.0 est plus explicite
+qu'un patch `0.1.1`.
 
 ## Séquence des commits
 

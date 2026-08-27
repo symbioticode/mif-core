@@ -15,7 +15,7 @@ from .testing import (
 try:
     __version__ = version("mif-foundation")
 except PackageNotFoundError:
-    __version__ = "0.1.0"
+    __version__ = "0+unknown"
 
 __all__ = [
     "CertificationReport",

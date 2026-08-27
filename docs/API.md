@@ -16,8 +16,9 @@ from core import (
 )
 ```
 
-`core.__version__` exposes the installed package version and falls back to the
-development version when imported directly from a checkout.
+`core.__version__` exposes the installed package version and falls back to
+`0+unknown` when imported from a checkout without distribution metadata. The
+fallback must not impersonate a published release.
 
 ## Boundaries
 

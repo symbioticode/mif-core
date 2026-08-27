@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mif-foundation"
-version = "0.1.0"
+version = "0.2.0"
 description = "Metric and strategy qualification layer for the Metric Integrity Framework"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
@@ -55,7 +55,7 @@ select = ["E4", "E7", "E9", "F", "I", "UP", "RUF", "BLE001", "TRY004"]
 
 [tool.mypy]
 python_version = "3.11"
-# The 0.1 adapter boundary accepts dynamic third-party handoffs. Keep gradual
+# The pre-1.0 adapter boundary accepts dynamic third-party handoffs. Keep gradual
 # typing until those public protocols are modeled without replacing them by Any.
 strict = false
 check_untyped_defs = true

@@ -17,5 +17,5 @@ be reviewed accordingly.
 
 ## Supported versions
 
-Only the latest code on `main` is actively maintained while the project is in
-development (`0.1.0`).
+Only the latest release and the latest code on `main` are actively maintained
+while the project remains pre-1.0.

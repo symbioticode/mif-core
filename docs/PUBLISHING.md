@@ -4,6 +4,11 @@ The repository is `symbioticode/mif-core`, while the PyPI distribution is
 `mif-foundation`. The import package remains `core` and the optional
 CLI remains `mif-core`.
 
+This split is intentional and stable. `mif-foundation` already exists as the
+published PyPI distribution, so renaming it would create a second package and
+an unnecessary migration. The repository and CLI keep the concise product
+name `mif-core`; Python keeps the existing `core` import contract.
+
 The current package metadata supports Python 3.11 and 3.12. Do not advertise a
 Python 3.13 release until the `mif-dal`/NumPy compatibility constraint is
 resolved.
@@ -51,3 +56,8 @@ python -m pip install mif-foundation
 python -c "import core; print(core.__version__)"
 mif-core catalog
 ```
+
+The CORE-CORR-001 contract corrections are released as `0.2.0`. Before 1.0, a
+minor bump is used whenever an observable public contract changes; patch bumps
+remain reserved for internal corrections that preserve caller-visible
+behavior.

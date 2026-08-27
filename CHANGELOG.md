@@ -1,11 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 — 2026-08-26
 
 - Standardized public validation errors: invalid field types raise `TypeError`,
   while invalid values of the expected type raise `ValueError`.
 - Added explicit positive, zero, and negative observation counts to stability
   diagnostics without changing the verdict calculation.
+- Confirmed the public naming contract: repository, product, and CLI
+  `mif-core`; PyPI distribution `mif-foundation`; Python import package `core`.
 
 ## 0.1.0
 
